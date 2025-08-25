@@ -1,0 +1,329 @@
+# NovaSignal Helm Chart Values
+# Default configuration for NovaSignal deployment
+
+# ============================================================================
+# Global Settings
+# ============================================================================
+global:
+  imageRegistry: ghcr.io
+  imagePullSecrets: []
+  storageClass: ""
+
+# ============================================================================
+# Application Settings
+# ============================================================================
+nameOverride: ""
+fullnameOverride: ""
+environment: development
+
+# ============================================================================
+# Frontend Configuration
+# ============================================================================
+frontend:
+  enabled: true
+  
+  image:
+    registry: ghcr.io
+    repository: novasignal/novasignal-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+    pullSecrets: []
+
+  replicaCount: 2
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8080
+
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: http
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1001
+    fsGroup: 1001
+
+  # Environment variables
+  env:
+    VITE_API_BASE_URL: https://api.novasignal.com
+    VITE_WS_BASE_URL: wss://api.novasignal.com/ws
+    VITE_APP_VERSION: "0.2.0"
+
+# ============================================================================
+# Backend Configuration
+# ============================================================================
+backend:
+  enabled: true
+  
+  image:
+    registry: ghcr.io
+    repository: novasignal/novasignal-backend
+    tag: latest
+    pullPolicy: IfNotPresent
+    pullSecrets: []
+
+  replicaCount: 3
+
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 20
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+
+  service:
+    type: ClusterIP
+    port: 8000
+    targetPort: 8000
+
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: http
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 10
+    failureThreshold: 3
+
+  readinessProbe:
+    httpGet:
+      path: /api/health
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 5
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1001
+    fsGroup: 1001
+
+  # Environment variables
+  env:
+    ENVIRONMENT: development
+    LOG_LEVEL: info
+    WORKERS: "4"
+    
+  # External service configurations
+  externalServices:
+    binance:
+      enabled: true
+      baseUrl: https://api.binance.com
+    alpaca:
+      enabled: false
+      baseUrl: https://paper-api.alpaca.markets
+
+# ============================================================================
+# Ingress Configuration
+# ============================================================================
+ingress:
+  enabled: true
+  className: nginx
+  hostname: novasignal.local
+  path: /
+  pathType: Prefix
+  
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+
+  tls:
+    enabled: true
+    secretName: novasignal-tls
+
+# ============================================================================
+# Service Account
+# ============================================================================
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+# ============================================================================
+# Pod Security Policy
+# ============================================================================
+podSecurityPolicy:
+  enabled: false
+
+# ============================================================================
+# Network Policy
+# ============================================================================
+networkPolicy:
+  enabled: false
+  ingress: []
+  egress: []
+
+# ============================================================================
+# Redis Configuration
+# ============================================================================
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: false
+  
+  master:
+    resources:
+      limits:
+        cpu: 250m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+# ============================================================================
+# PostgreSQL Configuration
+# ============================================================================
+postgresql:
+  enabled: false
+  auth:
+    postgresPassword: ""
+    database: novasignal
+  
+  primary:
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+
+# ============================================================================
+# Monitoring & Observability
+# ============================================================================
+monitoring:
+  enabled: true
+  
+  serviceMonitor:
+    enabled: true
+    namespace: monitoring
+    interval: 30s
+    scrapeTimeout: 10s
+    
+  prometheusRule:
+    enabled: true
+    namespace: monitoring
+
+# ============================================================================
+# Persistence
+# ============================================================================
+persistence:
+  enabled: false
+  storageClass: ""
+  size: 1Gi
+  accessMode: ReadWriteOnce
+
+# ============================================================================
+# ConfigMaps and Secrets
+# ============================================================================
+configMaps:
+  app:
+    data:
+      app.env: |
+        NODE_ENV=production
+        LOG_LEVEL=info
+
+secrets:
+  app:
+    stringData:
+      database-url: ""
+      redis-url: ""
+      api-keys: ""
+
+# ============================================================================
+# Pod Disruption Budget
+# ============================================================================
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+# ============================================================================
+# Node Affinity and Tolerations
+# ============================================================================
+nodeSelector: {}
+
+tolerations: []
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - novasignal
+          topologyKey: kubernetes.io/hostname
+
+# ============================================================================
+# External Dependencies
+# ============================================================================
+externalDatabase:
+  enabled: false
+  host: ""
+  port: 5432
+  database: novasignal
+  username: ""
+  password: ""
+
+externalRedis:
+  enabled: false
+  host: ""
+  port: 6379
+  password: ""
+
+# ============================================================================
+# Backup Configuration
+# ============================================================================
+backup:
+  enabled: false
+  schedule: "0 2 * * *"
+  retention: 30

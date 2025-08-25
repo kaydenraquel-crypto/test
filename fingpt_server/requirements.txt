@@ -1,0 +1,18 @@
+# FinGPT Server Requirements for NovaSignal
+fastapi>=0.104.1
+uvicorn[standard]>=0.24.0
+pydantic>=2.5.0
+transformers>=4.35.0
+torch>=2.1.0
+accelerate>=0.24.0
+sentencepiece>=0.1.99
+datasets>=2.14.0
+bitsandbytes>=0.41.0
+peft>=0.6.0
+
+# Optional: For better FinGPT model support
+# fingpt>=0.1.0  # Uncomment when available via pip
+
+# Development dependencies  
+python-multipart>=0.0.6
+requests>=2.31.0

@@ -1,0 +1,79 @@
+1. Get the application URL by running these commands:
+{{- if .Values.ingress.enabled }}
+{{- range $host := .Values.ingress.hosts }}
+  {{- range .paths }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+  {{- end }}
+{{- end }}
+{{- else if contains "NodePort" .Values.frontend.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "novasignal.fullname" . }}-frontend)
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+{{- else if contains "LoadBalancer" .Values.frontend.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "novasignal.fullname" . }}-frontend'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "novasignal.fullname" . }}-frontend --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo http://$SERVICE_IP:{{ .Values.frontend.service.port }}
+{{- else if contains "ClusterIP" .Values.frontend.service.type }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "novasignal.name" . }},app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=frontend" -o jsonpath="{.items[0].metadata.name}")
+  export CONTAINER_PORT=$(kubectl get pod --namespace {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+  echo "Visit http://127.0.0.1:8080 to use your application"
+  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT
+{{- end }}
+
+2. Check the status of your deployment:
+  kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/instance={{ .Release.Name }}"
+
+3. View logs:
+  # Frontend logs
+  kubectl logs --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "novasignal.name" . }},app.kubernetes.io/component=frontend" -f
+
+  # Backend logs  
+  kubectl logs --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "novasignal.name" . }},app.kubernetes.io/component=backend" -f
+
+4. Access the backend API:
+{{- if .Values.ingress.enabled }}
+  API URL: http{{ if .Values.ingress.tls.enabled }}s{{ end }}://{{ .Values.ingress.hostname }}/api
+  WebSocket URL: ws{{ if .Values.ingress.tls.enabled }}s{{ end }}://{{ .Values.ingress.hostname }}/ws
+  Health Check: http{{ if .Values.ingress.tls.enabled }}s{{ end }}://{{ .Values.ingress.hostname }}/health
+  Metrics: http{{ if .Values.ingress.tls.enabled }}s{{ end }}://{{ .Values.ingress.hostname }}/metrics
+{{- else }}
+  export BACKEND_POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "novasignal.name" . }},app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=backend" -o jsonpath="{.items[0].metadata.name}")
+  kubectl --namespace {{ .Release.Namespace }} port-forward $BACKEND_POD_NAME 8000:8000
+  
+  API URL: http://127.0.0.1:8000/api
+  Health Check: http://127.0.0.1:8000/health
+  Metrics: http://127.0.0.1:8000/metrics
+{{- end }}
+
+5. Database connection:
+{{- if .Values.postgresql.enabled }}
+  kubectl run postgresql-client --rm --tty -i --restart='Never' --namespace {{ .Release.Namespace }} --image docker.io/bitnami/postgresql:15 --env="PGPASSWORD=$POSTGRES_PASSWORD" \
+    --command -- psql --host {{ include "novasignal.fullname" . }}-postgresql --port 5432 -U {{ .Values.postgresql.auth.username }} -d {{ .Values.postgresql.auth.database }}
+{{- end }}
+
+{{- if .Values.redis.enabled }}
+6. Redis connection:
+  kubectl run redis-client --rm --tty -i --restart='Never' --namespace {{ .Release.Namespace }} --image docker.io/bitnami/redis:7.2 \
+    --command -- redis-cli -h {{ include "novasignal.fullname" . }}-redis-master
+{{- end }}
+
+Configuration Summary:
+- Environment: {{ .Values.environment }}
+- Frontend replicas: {{ .Values.frontend.replicaCount }}
+- Backend replicas: {{ .Values.backend.replicaCount }}
+{{- if .Values.frontend.autoscaling.enabled }}
+- Frontend autoscaling: {{ .Values.frontend.autoscaling.minReplicas }}-{{ .Values.frontend.autoscaling.maxReplicas }} replicas
+{{- end }}
+{{- if .Values.backend.autoscaling.enabled }}
+- Backend autoscaling: {{ .Values.backend.autoscaling.minReplicas }}-{{ .Values.backend.autoscaling.maxReplicas }} replicas
+{{- end }}
+{{- if .Values.ingress.enabled }}
+- Ingress enabled: {{ .Values.ingress.hostname }}
+{{- end }}
+{{- if .Values.networkPolicy.enabled }}
+- Network policies enabled for security
+{{- end }}
+{{- if .Values.persistence.enabled }}
+- Persistent storage enabled: {{ .Values.persistence.size }}
+{{- end }}

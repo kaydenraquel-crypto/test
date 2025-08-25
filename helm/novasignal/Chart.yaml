@@ -1,0 +1,35 @@
+apiVersion: v2
+name: novasignal
+description: NovaSignal Professional Trading Platform
+type: application
+version: 0.2.0
+appVersion: "0.2.0"
+
+maintainers:
+  - name: NovaSignal Team
+    email: devops@novasignal.com
+
+keywords:
+  - trading
+  - finance
+  - cryptocurrency
+  - stocks
+  - charts
+
+home: https://novasignal.com
+sources:
+  - https://github.com/novasignal/novasignal
+
+dependencies:
+  - name: redis
+    version: "17.x.x"
+    repository: https://charts.bitnami.com/bitnami
+    condition: redis.enabled
+  - name: postgresql
+    version: "12.x.x"  
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled
+
+annotations:
+  category: Trading Platform
+  licenses: MIT

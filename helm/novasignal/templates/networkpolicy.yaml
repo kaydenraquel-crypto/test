@@ -1,0 +1,127 @@
+{{- if .Values.networkPolicy.enabled }}
+# Frontend Network Policy
+{{- if .Values.frontend.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "novasignal.fullname" . }}-frontend
+  labels:
+    {{- include "novasignal.labels" . | nindent 4 }}
+    app.kubernetes.io/component: frontend
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "novasignal.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: frontend
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        {{- if .Values.networkPolicy.ingress.fromIngress }}
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+        {{- end }}
+        {{- if .Values.networkPolicy.ingress.fromSameNamespace }}
+        - namespaceSelector:
+            matchLabels:
+              name: {{ .Release.Namespace }}
+        {{- end }}
+      ports:
+        - protocol: TCP
+          port: 8080
+  egress:
+    {{- if .Values.networkPolicy.egress.allowDNS }}
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    {{- end }}
+    {{- if .Values.networkPolicy.egress.allowExternal }}
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 80
+        - protocol: TCP
+          port: 443
+    {{- end }}
+{{- end }}
+---
+# Backend Network Policy
+{{- if .Values.backend.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "novasignal.fullname" . }}-backend
+  labels:
+    {{- include "novasignal.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "novasignal.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: backend
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        {{- if .Values.networkPolicy.ingress.fromIngress }}
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+        {{- end }}
+        {{- if .Values.networkPolicy.ingress.fromSameNamespace }}
+        - namespaceSelector:
+            matchLabels:
+              name: {{ .Release.Namespace }}
+        {{- end }}
+        {{- if .Values.frontend.enabled }}
+        - podSelector:
+            matchLabels:
+              {{- include "novasignal.selectorLabels" . | nindent 14 }}
+              app.kubernetes.io/component: frontend
+        {{- end }}
+      ports:
+        - protocol: TCP
+          port: 8000
+  egress:
+    {{- if .Values.networkPolicy.egress.allowDNS }}
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    {{- end }}
+    {{- if .Values.networkPolicy.egress.allowExternal }}
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 80
+        - protocol: TCP
+          port: 443
+    {{- end }}
+    {{- if .Values.redis.enabled }}
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    {{- end }}
+    {{- if .Values.postgresql.enabled }}
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: postgresql
+      ports:
+        - protocol: TCP
+          port: 5432
+    {{- end }}
+{{- end }}
+{{- end }}
