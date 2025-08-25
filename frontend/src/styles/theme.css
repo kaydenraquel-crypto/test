@@ -1,0 +1,357 @@
+/* Theme-based CSS Custom Properties and Styles */
+
+/* Base theme variables - will be overridden by ThemeProvider */
+:root {
+  /* Chart colors */
+  --chart-bg: #1e1e1e;
+  --chart-text: #ffffff;
+  --chart-grid: #333333;
+  --chart-up: #00e676;
+  --chart-down: #ff5252;
+  
+  /* Panel colors */
+  --panel-bg-primary: #1a1a1a;
+  --panel-bg-secondary: #2d2d2d;
+  --panel-bg-light: #f8f9fa;
+  --panel-border: #333333;
+  
+  /* Text colors */
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0a0;
+  --text-muted: #666666;
+  --text-inverse: #1a202c;
+  
+  /* Button colors */
+  --btn-bg: #4a5568;
+  --btn-hover: #2d3748;
+  --btn-text: #ffffff;
+  --btn-border: #4a5568;
+  
+  /* Status colors */
+  --success: #00e676;
+  --warning: #ffcc02;
+  --error: #ff5252;
+  
+  /* News panel colors */
+  --news-bg: #f8f9fa;
+  --news-text: #1a202c;
+  --news-border: #e2e8f0;
+  --news-hover: #e2e8f0;
+  
+  /* Sentiment colors */
+  --bullish-bg: rgba(0, 230, 118, 0.2);
+  --bearish-bg: rgba(255, 82, 82, 0.2);
+  --neutral-bg: rgba(160, 160, 160, 0.2);
+  
+  /* Effects */
+  --shadow: rgba(0, 0, 0, 0.3);
+  --glow: rgba(100, 181, 246, 0.3);
+}
+
+/* Global application theming */
+body {
+  background-color: var(--panel-bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Panel theming */
+.panel {
+  background-color: var(--panel-bg-secondary) !important;
+  border: 1px solid var(--panel-border) !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 2px 8px var(--shadow) !important;
+  transition: all 0.3s ease;
+}
+
+.panel h3 {
+  color: var(--text-primary) !important;
+}
+
+.panel h4 {
+  color: var(--text-secondary) !important;
+}
+
+/* News Panel Light Theme */
+.news-panel-light {
+  background-color: var(--news-bg) !important;
+  border: 1px solid var(--news-border) !important;
+  color: var(--news-text) !important;
+  backdrop-filter: none !important;
+  box-shadow: 0 4px 12px var(--shadow) !important;
+}
+
+.news-panel-light h3 {
+  color: var(--news-text) !important;
+  font-weight: 600;
+}
+
+.news-panel-light .text-white,
+.news-panel-light .text-lg {
+  color: var(--news-text) !important;
+}
+
+.news-panel-light .text-gray-400,
+.news-panel-light .text-sm {
+  color: var(--text-secondary) !important;
+}
+
+.news-panel-light .text-gray-300 {
+  color: var(--news-text) !important;
+}
+
+.news-panel-light .text-gray-500 {
+  color: var(--text-muted) !important;
+}
+
+.news-panel-light .text-gray-600 {
+  color: var(--text-secondary) !important;
+}
+
+.news-panel-light .border-gray-700 {
+  border-color: var(--news-border) !important;
+}
+
+.news-panel-light .bg-gray-800 {
+  background-color: var(--news-hover) !important;
+  border-color: var(--news-border) !important;
+}
+
+.news-panel-light .hover\:bg-gray-800:hover {
+  background-color: var(--news-hover) !important;
+}
+
+.news-panel-light .bg-gray-700 {
+  background-color: var(--panel-bg-light) !important;
+}
+
+/* Sentiment indicators for news panel */
+.news-panel-light .bg-green-600\/20 {
+  background-color: var(--bullish-bg) !important;
+}
+
+.news-panel-light .text-green-400 {
+  color: var(--success) !important;
+}
+
+.news-panel-light .bg-red-600\/20 {
+  background-color: var(--bearish-bg) !important;
+}
+
+.news-panel-light .text-red-400 {
+  color: var(--error) !important;
+}
+
+.news-panel-light .bg-gray-600\/20 {
+  background-color: var(--neutral-bg) !important;
+}
+
+.news-panel-light .text-blue-400 {
+  color: var(--btn-bg) !important;
+}
+
+.news-panel-light .bg-blue-600\/20 {
+  background-color: rgba(49, 130, 206, 0.15) !important;
+}
+
+/* Button theming */
+.action-btn {
+  background-color: var(--btn-bg) !important;
+  color: var(--btn-text) !important;
+  border: 1px solid var(--btn-border) !important;
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+  background-color: var(--btn-hover) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px var(--shadow);
+}
+
+.action-btn.primary {
+  background-color: var(--success) !important;
+  border-color: var(--success) !important;
+}
+
+.action-btn.primary:hover {
+  filter: brightness(0.9);
+}
+
+/* Icon button theming */
+.icon-btn {
+  background-color: var(--error) !important;
+  color: var(--btn-text) !important;
+  border: 1px solid var(--error) !important;
+  transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+  filter: brightness(0.9);
+  transform: translateY(-1px);
+}
+
+/* Controls row theming */
+.controls-row {
+  background-color: var(--panel-bg-secondary) !important;
+  border: 1px solid var(--panel-border) !important;
+  color: var(--text-primary) !important;
+}
+
+.controls-row select,
+.controls-row input {
+  background-color: var(--panel-bg-primary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--panel-border) !important;
+}
+
+.controls-row select:hover,
+.controls-row input:hover {
+  border-color: var(--btn-bg) !important;
+}
+
+.controls-row select:focus,
+.controls-row input:focus {
+  outline: none;
+  border-color: var(--success) !important;
+  box-shadow: 0 0 0 2px var(--glow);
+}
+
+/* Compact list theming */
+.compact-list li {
+  border-bottom: 1px solid var(--panel-border) !important;
+  color: var(--text-primary) !important;
+}
+
+.compact-list li .label {
+  color: var(--text-secondary) !important;
+}
+
+.compact-list li .value {
+  color: var(--text-primary) !important;
+}
+
+.compact-list li .positive {
+  color: var(--success) !important;
+}
+
+.compact-list li .negative {
+  color: var(--error) !important;
+}
+
+/* Signals list theming */
+.signals-list li {
+  border-bottom: 1px solid var(--panel-border) !important;
+  color: var(--text-primary) !important;
+}
+
+.signal-item {
+  color: var(--text-primary) !important;
+}
+
+.signal-time {
+  color: var(--text-muted) !important;
+}
+
+.signal-type.buy {
+  background-color: var(--success) !important;
+  color: var(--text-inverse) !important;
+}
+
+.signal-type.sell {
+  background-color: var(--error) !important;
+  color: var(--btn-text) !important;
+}
+
+.signal-price {
+  color: var(--text-primary) !important;
+}
+
+.signal-reason {
+  color: var(--text-secondary) !important;
+}
+
+/* Indicator cards theming */
+.indicator-card {
+  background-color: var(--panel-bg-secondary) !important;
+  border: 1px solid var(--panel-border) !important;
+  color: var(--text-primary) !important;
+}
+
+.indicator-name {
+  color: var(--text-primary) !important;
+}
+
+.indicator-value {
+  color: var(--btn-bg) !important;
+}
+
+.indicator-change.positive {
+  color: var(--success) !important;
+}
+
+.indicator-change.negative {
+  color: var(--error) !important;
+}
+
+/* Bottom grid theming */
+.bottom-grid .panel {
+  background-color: var(--panel-bg-secondary) !important;
+  border: 1px solid var(--panel-border) !important;
+  color: var(--text-primary) !important;
+}
+
+.bottom-grid .panel h3 {
+  color: var(--text-primary) !important;
+}
+
+/* Responsive theme adjustments */
+@media (max-width: 768px) {
+  .bottom-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .news-panel-light {
+    margin: 8px 0;
+  }
+}
+
+/* Theme transition animations */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Special effects for different themes */
+.theme-glow {
+  box-shadow: 0 0 20px var(--glow);
+}
+
+.theme-shadow {
+  box-shadow: 0 4px 12px var(--shadow);
+}
+
+/* Loading states with theme support */
+.loading-spinner {
+  border-top-color: var(--btn-bg);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error states with theme support */
+.error-state {
+  background-color: var(--bearish-bg);
+  color: var(--error);
+  border: 1px solid var(--error);
+}
+
+/* Success states with theme support */
+.success-state {
+  background-color: var(--bullish-bg);
+  color: var(--success);
+  border: 1px solid var(--success);
+}

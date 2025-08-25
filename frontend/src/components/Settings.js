@@ -1,0 +1,80 @@
+import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
+import { useState, useRef } from 'react';
+import { Settings as SettingsIcon, BarChart3, Eye, Bell, Download, Upload, RotateCcw, X, Check, Monitor, Grid3X3, Volume2, RefreshCw, Zap, TrendingUp, Activity } from 'lucide-react';
+import { useUserPreferences, useChartPreferences, useIndicatorPreferences, useDisplayPreferences, useWatchlistPreferences } from '../hooks/useUserPreferences';
+import { userPreferences } from '../lib/userPreferences';
+import { CHART_THEMES, CHART_TYPES } from './ChartCustomization';
+const Settings = ({ isOpen, onClose }) => {
+    const [activeTab, setActiveTab] = useState('chart');
+    const [showResetConfirm, setShowResetConfirm] = useState(false);
+    const fileInputRef = useRef(null);
+    const { preferences, resetToDefaults } = useUserPreferences();
+    const chartPrefs = useChartPreferences();
+    const indicatorPrefs = useIndicatorPreferences();
+    const displayPrefs = useDisplayPreferences();
+    const watchlistPrefs = useWatchlistPreferences();
+    if (!isOpen)
+        return null;
+    const exportPreferences = () => {
+        const data = userPreferences.exportPreferences();
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'novasignal-preferences.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    };
+    const importPreferences = (event) => {
+        const file = event.target.files?.[0];
+        if (!file)
+            return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const content = e.target?.result;
+            if (userPreferences.importPreferences(content)) {
+                alert('Preferences imported successfully!');
+            }
+            else {
+                alert('Failed to import preferences. Please check the file format.');
+            }
+        };
+        reader.readAsText(file);
+        // Reset input
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
+    const handleReset = () => {
+        if (showResetConfirm) {
+            resetToDefaults();
+            setShowResetConfirm(false);
+            alert('Preferences reset to defaults!');
+        }
+        else {
+            setShowResetConfirm(true);
+            setTimeout(() => setShowResetConfirm(false), 5000);
+        }
+    };
+    const tabs = [
+        { key: 'chart', label: 'Chart', icon: BarChart3 },
+        { key: 'indicators', label: 'Indicators', icon: TrendingUp },
+        { key: 'display', label: 'Display', icon: Eye },
+        { key: 'data', label: 'Data', icon: Activity },
+        { key: 'notifications', label: 'Alerts', icon: Bell },
+    ];
+    return (_jsx("div", { className: "fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center", children: _jsxs("div", { className: "bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden", children: [_jsxs("div", { className: "flex items-center justify-between p-4 border-b border-gray-200", children: [_jsxs("div", { className: "flex items-center space-x-2", children: [_jsx(SettingsIcon, { className: "w-5 h-5 text-gray-600" }), _jsx("h2", { className: "text-xl font-bold text-gray-900", children: "Settings" })] }), _jsx("button", { onClick: onClose, className: "p-1 hover:bg-gray-100 rounded-lg transition-colors", children: _jsx(X, { className: "w-5 h-5 text-gray-500" }) })] }), _jsxs("div", { className: "flex", children: [_jsxs("div", { className: "w-48 bg-gray-50 border-r border-gray-200", children: [_jsx("nav", { className: "p-2", children: tabs.map((tab) => (_jsxs("button", { onClick: () => setActiveTab(tab.key), className: `w-full flex items-center space-x-3 px-3 py-2 text-left text-sm font-medium rounded-lg transition-colors ${activeTab === tab.key
+                                            ? 'bg-blue-100 text-blue-700'
+                                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`, children: [_jsx(tab.icon, { className: "w-4 h-4" }), _jsx("span", { children: tab.label })] }, tab.key))) }), _jsxs("div", { className: "p-2 border-t border-gray-200 mt-4", children: [_jsxs("button", { onClick: exportPreferences, className: "w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors", children: [_jsx(Download, { className: "w-4 h-4" }), _jsx("span", { children: "Export" })] }), _jsxs("button", { onClick: () => fileInputRef.current?.click(), className: "w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors", children: [_jsx(Upload, { className: "w-4 h-4" }), _jsx("span", { children: "Import" })] }), _jsx("button", { onClick: handleReset, className: `w-full flex items-center space-x-2 px-3 py-2 text-sm rounded-lg transition-colors ${showResetConfirm
+                                                ? 'bg-red-100 text-red-700'
+                                                : 'text-gray-600 hover:bg-gray-100'}`, children: showResetConfirm ? (_jsxs(_Fragment, { children: [_jsx(Check, { className: "w-4 h-4" }), _jsx("span", { children: "Confirm Reset" })] })) : (_jsxs(_Fragment, { children: [_jsx(RotateCcw, { className: "w-4 h-4" }), _jsx("span", { children: "Reset All" })] })) })] })] }), _jsxs("div", { className: "flex-1 p-6 overflow-y-auto max-h-[70vh]", children: [activeTab === 'chart' && (_jsx("div", { className: "space-y-6", children: _jsxs("div", { children: [_jsx("h3", { className: "text-lg font-semibold text-gray-900 mb-4", children: "Chart Preferences" }), _jsxs("div", { className: "mb-6", children: [_jsx("label", { className: "block text-sm font-medium text-gray-700 mb-2", children: "Chart Theme" }), _jsx("div", { className: "grid grid-cols-2 gap-3", children: CHART_THEMES.map((theme) => (_jsxs("button", { onClick: () => chartPrefs.setTheme(theme.name), className: `p-3 border rounded-lg flex items-center justify-between transition-colors ${chartPrefs.theme === theme.name
+                                                                ? 'border-blue-500 bg-blue-50'
+                                                                : 'border-gray-200 hover:border-gray-300'}`, children: [_jsx("span", { className: "font-medium", children: theme.name }), _jsx("div", { className: "w-6 h-6 rounded", style: { backgroundColor: theme.backgroundColor } })] }, theme.name))) })] }), _jsxs("div", { className: "mb-6", children: [_jsx("label", { className: "block text-sm font-medium text-gray-700 mb-2", children: "Default Chart Type" }), _jsx("div", { className: "grid grid-cols-2 gap-3", children: CHART_TYPES.map((type) => (_jsxs("button", { onClick: () => chartPrefs.setType(type.value), className: `p-3 border rounded-lg flex items-center space-x-2 transition-colors ${chartPrefs.type === type.value
+                                                                ? 'border-blue-500 bg-blue-50'
+                                                                : 'border-gray-200 hover:border-gray-300'}`, children: [_jsx(type.icon, { className: "w-4 h-4" }), _jsx("span", { children: type.label })] }, type.value))) })] }), _jsxs("div", { className: "space-y-4", children: [_jsxs("div", { className: "flex items-center justify-between", children: [_jsxs("label", { className: "flex items-center space-x-2", children: [_jsx(Volume2, { className: "w-4 h-4 text-gray-500" }), _jsx("span", { className: "text-sm font-medium text-gray-700", children: "Show Volume" })] }), _jsx("button", { onClick: () => chartPrefs.setShowVolume(!chartPrefs.showVolume), className: `relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${chartPrefs.showVolume ? 'bg-blue-600' : 'bg-gray-200'}`, children: _jsx("span", { className: `inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${chartPrefs.showVolume ? 'translate-x-6' : 'translate-x-1'}` }) })] }), _jsxs("div", { className: "flex items-center justify-between", children: [_jsxs("label", { className: "flex items-center space-x-2", children: [_jsx(Grid3X3, { className: "w-4 h-4 text-gray-500" }), _jsx("span", { className: "text-sm font-medium text-gray-700", children: "Show Grid" })] }), _jsx("button", { onClick: () => chartPrefs.setShowGrid(!chartPrefs.showGrid), className: `relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${chartPrefs.showGrid ? 'bg-blue-600' : 'bg-gray-200'}`, children: _jsx("span", { className: `inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${chartPrefs.showGrid ? 'translate-x-6' : 'translate-x-1'}` }) })] })] })] }) })), activeTab === 'indicators' && (_jsx("div", { className: "space-y-6", children: _jsxs("div", { children: [_jsx("h3", { className: "text-lg font-semibold text-gray-900 mb-4", children: "Technical Indicators" }), _jsx("div", { className: "grid grid-cols-1 gap-4", children: Object.entries(indicatorPrefs.enabled).map(([key, enabled]) => (_jsxs("div", { className: "flex items-center justify-between p-3 border border-gray-200 rounded-lg", children: [_jsxs("div", { className: "flex items-center space-x-3", children: [_jsx(Zap, { className: "w-4 h-4 text-gray-500" }), _jsx("span", { className: "font-medium text-gray-900", children: key.toUpperCase().replace('_', ' ') })] }), _jsx("button", { onClick: () => indicatorPrefs.toggle(key), className: `relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${enabled ? 'bg-blue-600' : 'bg-gray-200'}`, children: _jsx("span", { className: `inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${enabled ? 'translate-x-6' : 'translate-x-1'}` }) })] }, key))) })] }) })), activeTab === 'display' && (_jsx("div", { className: "space-y-6", children: _jsxs("div", { children: [_jsx("h3", { className: "text-lg font-semibold text-gray-900 mb-4", children: "Display Preferences" }), _jsxs("div", { className: "space-y-4", children: [_jsxs("div", { className: "flex items-center justify-between", children: [_jsxs("label", { className: "flex items-center space-x-2", children: [_jsx(Monitor, { className: "w-4 h-4 text-gray-500" }), _jsx("span", { className: "text-sm font-medium text-gray-700", children: "Compact Mode" })] }), _jsx("button", { onClick: () => displayPrefs.setCompactMode(!displayPrefs.compactMode), className: `relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${displayPrefs.compactMode ? 'bg-blue-600' : 'bg-gray-200'}`, children: _jsx("span", { className: `inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${displayPrefs.compactMode ? 'translate-x-6' : 'translate-x-1'}` }) })] }), _jsxs("div", { className: "flex items-center justify-between", children: [_jsxs("label", { className: "flex items-center space-x-2", children: [_jsx(RefreshCw, { className: "w-4 h-4 text-gray-500" }), _jsx("span", { className: "text-sm font-medium text-gray-700", children: "Auto Refresh" })] }), _jsx("button", { onClick: () => displayPrefs.setAutoRefresh(!displayPrefs.autoRefresh), className: `relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${displayPrefs.autoRefresh ? 'bg-blue-600' : 'bg-gray-200'}`, children: _jsx("span", { className: `inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${displayPrefs.autoRefresh ? 'translate-x-6' : 'translate-x-1'}` }) })] }), displayPrefs.autoRefresh && (_jsxs("div", { children: [_jsx("label", { className: "block text-sm font-medium text-gray-700 mb-2", children: "Refresh Interval (seconds)" }), _jsxs("select", { value: displayPrefs.refreshInterval, onChange: (e) => displayPrefs.setRefreshInterval(Number(e.target.value)), className: "w-full p-2 border border-gray-300 rounded-lg", children: [_jsx("option", { value: 15, children: "15 seconds" }), _jsx("option", { value: 30, children: "30 seconds" }), _jsx("option", { value: 60, children: "1 minute" }), _jsx("option", { value: 300, children: "5 minutes" })] })] })), _jsxs("div", { children: [_jsx("label", { className: "block text-sm font-medium text-gray-700 mb-2", children: "Font Size" }), _jsx("div", { className: "grid grid-cols-3 gap-2", children: ['small', 'medium', 'large'].map((size) => (_jsx("button", { onClick: () => displayPrefs.setFontSize(size), className: `p-2 border rounded-lg text-sm font-medium transition-colors ${displayPrefs.fontSize === size
+                                                                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                                                                        : 'border-gray-200 hover:border-gray-300'}`, children: size.charAt(0).toUpperCase() + size.slice(1) }, size))) })] })] })] }) })), activeTab === 'data' && (_jsx("div", { className: "space-y-6", children: _jsxs("div", { children: [_jsx("h3", { className: "text-lg font-semibold text-gray-900 mb-4", children: "Data Preferences" }), _jsxs("div", { className: "space-y-4", children: [_jsxs("div", { children: [_jsx("label", { className: "block text-sm font-medium text-gray-700 mb-2", children: "Default Symbol" }), _jsx("input", { type: "text", value: preferences.defaultSymbol, onChange: (e) => userPreferences.setPreference('defaultSymbol', e.target.value.toUpperCase()), className: "w-full p-2 border border-gray-300 rounded-lg", placeholder: "AAPL" })] }), _jsxs("div", { children: [_jsxs("label", { className: "block text-sm font-medium text-gray-700 mb-2", children: ["Watchlist (", watchlistPrefs.watchlist.length, " symbols)"] }), _jsx("div", { className: "flex flex-wrap gap-2", children: watchlistPrefs.watchlist.map((symbol) => (_jsxs("span", { className: "inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm", children: [symbol, _jsx("button", { onClick: () => watchlistPrefs.remove(symbol), className: "ml-2 text-gray-400 hover:text-red-500", children: _jsx(X, { className: "w-3 h-3" }) })] }, symbol))) })] }), preferences.recentSymbols.length > 0 && (_jsxs("div", { children: [_jsx("label", { className: "block text-sm font-medium text-gray-700 mb-2", children: "Recent Symbols" }), _jsx("div", { className: "flex flex-wrap gap-2", children: preferences.recentSymbols.map((symbol) => (_jsx("span", { className: "inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm", children: symbol }, symbol))) })] }))] })] }) })), activeTab === 'notifications' && (_jsx("div", { className: "space-y-6", children: _jsxs("div", { children: [_jsx("h3", { className: "text-lg font-semibold text-gray-900 mb-4", children: "Price Alerts" }), _jsxs("div", { className: "flex items-center justify-between mb-4", children: [_jsxs("label", { className: "flex items-center space-x-2", children: [_jsx(Bell, { className: "w-4 h-4 text-gray-500" }), _jsx("span", { className: "text-sm font-medium text-gray-700", children: "Enable Notifications" })] }), _jsx("button", { onClick: () => userPreferences.setPreference('enableNotifications', !preferences.enableNotifications), className: `relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${preferences.enableNotifications ? 'bg-blue-600' : 'bg-gray-200'}`, children: _jsx("span", { className: `inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${preferences.enableNotifications ? 'translate-x-6' : 'translate-x-1'}` }) })] }), _jsxs("div", { className: "text-center text-gray-500 py-8", children: [_jsx(Bell, { className: "w-12 h-12 mx-auto mb-4 text-gray-300" }), _jsx("p", { className: "text-sm", children: "Price alerts will be implemented in a future update." }), _jsx("p", { className: "text-xs text-gray-400 mt-1", children: "Stay tuned for this feature!" })] })] }) }))] })] }), _jsx("input", { ref: fileInputRef, type: "file", accept: ".json", onChange: importPreferences, className: "hidden" })] }) }));
+};
+export default Settings;

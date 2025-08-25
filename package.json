@@ -1,0 +1,58 @@
+{
+  "name": "novasignal-trading-platform",
+  "version": "1.0.0",
+  "description": "Professional Trading Platform with Advanced Technical Analysis, AI-Powered Insights, and Real-Time Market Data",
+  "private": true,
+  "author": "NovaSignal Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/NovaSignal_v0_2.git"
+  },
+  "keywords": [
+    "trading",
+    "platform",
+    "technical-analysis",
+    "real-time",
+    "market-data",
+    "cryptocurrency",
+    "stocks",
+    "charts",
+    "ai-powered"
+  ],
+  "workspaces": [
+    "frontend",
+    "installer"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && .venv/Scripts/python.exe -m uvicorn main:app --reload --port 8000",
+    "dev:setup": "npm run setup:backend && npm run setup:frontend && npm run setup:installer",
+    "setup:backend": "cd backend && python -m venv .venv && .venv/Scripts/python.exe -m pip install --upgrade pip && .venv/Scripts/pip.exe install -r requirements.txt",
+    "setup:frontend": "cd frontend && npm install",
+    "setup:installer": "cd installer && npm install",
+    "build": "npm run build:frontend && npm run build:backend",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && echo 'Backend build complete'",
+    "test": "concurrently \"npm run test:frontend\" \"npm run test:backend\"",
+    "test:frontend": "cd frontend && npm run test",
+    "test:backend": "cd backend && .venv/Scripts/python.exe -m pytest",
+    "test:e2e": "cd frontend && npm run test:e2e",
+    "lint": "concurrently \"npm run lint:frontend\" \"npm run lint:backend\"",
+    "lint:frontend": "cd frontend && npm run lint",
+    "lint:backend": "cd backend && .venv/Scripts/python.exe -m flake8 .",
+    "clean": "rimraf frontend/dist backend/__pycache__ installer/dist node_modules/*/node_modules",
+    "installer:windows": "cd installer && npm run build:windows",
+    "installer:macos": "cd installer && npm run build:macos",
+    "installer:linux": "cd installer && npm run build:linux"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "rimraf": "^5.0.5"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}

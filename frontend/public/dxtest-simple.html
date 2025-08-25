@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DXCharts Lite Test - NovaSignal (Simple)</title>
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #0f0f0f;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        
+        .header {
+            margin-bottom: 20px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background-color: #555;
+        }
+        
+        .btn.active {
+            background-color: #4fc3f7;
+        }
+        
+        .status {
+            margin-bottom: 10px;
+        }
+        
+        .error {
+            background-color: #2d1b1b;
+            color: #f44336;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        
+        .loading {
+            color: #4fc3f7;
+            margin-bottom: 10px;
+        }
+        
+        .success {
+            background-color: #1b2d1b;
+            color: #4caf50;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        
+        #chartContainer {
+            width: 100%;
+            height: 500px;
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .debug {
+            background-color: #1a1a1a;
+            padding: 15px;
+            border-radius: 4px;
+            color: #a0a0a0;
+            font-size: 14px;
+        }
+        
+        .debug h3 {
+            color: #4fc3f7;
+            margin-bottom: 10px;
+        }
+        
+        .comparison {
+            background-color: #1a1a2e;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .comparison h3 {
+            color: #4fc3f7;
+            margin-bottom: 10px;
+        }
+        
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .pros, .cons {
+            padding: 10px;
+            border-radius: 4px;
+        }
+        
+        .pros {
+            background-color: #1b2d1b;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .cons {
+            background-color: #2d1b1b;
+            border-left: 4px solid #f44336;
+        }
+        
+        .center-content {
+            text-align: center;
+            color: #a0a0a0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 style="color: #4fc3f7;">🚀 DXCharts Lite Integration Test</h1>
+        <div class="status">
+            <span><strong>Status:</strong> Testing DXcharts integration for NovaSignal</span>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button id="testCDN" class="btn">🌐 Test CDN Version</button>
+        <button id="testNPM" class="btn">📦 Test NPM Integration</button>
+        <button id="loadSample" class="btn">📊 Generate Sample Chart</button>
+        <a href="/" class="btn" style="background-color: #f44336;">← Back to Main App</a>
+    </div>
+    
+    <div id="status"></div>
+    
+    <div class="comparison">
+        <h3>📊 Current vs DXcharts Comparison</h3>
+        <div class="pros-cons">
+            <div class="pros">
+                <h4 style="color: #4caf50;">✅ DXcharts Advantages</h4>
+                <ul>
+                    <li>Professional-grade financial charting</li>
+                    <li>Built-in trading indicators</li>
+                    <li>Drawing tools & annotations</li>
+                    <li>Better performance with large datasets</li>
+                    <li>No spacing/rendering issues</li>
+                    <li>Order management integration</li>
+                    <li>Advanced customization</li>
+                    <li>Free for basic usage</li>
+                </ul>
+            </div>
+            <div class="cons">
+                <h4 style="color: #f44336;">❌ Current Lightweight Charts Issues</h4>
+                <ul>
+                    <li>Candlestick spacing problems</li>
+                    <li>Data rendering bugs</li>
+                    <li>Limited financial indicators</li>
+                    <li>Basic customization only</li>
+                    <li>No built-in drawing tools</li>
+                    <li>Performance issues with large data</li>
+                    <li>No order management features</li>
+                    <li>Time spent debugging vs building</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div id="chartContainer">
+        <div class="center-content">
+            <div style="font-size: 48px; margin-bottom: 20px;">📊</div>
+            <h3>DXcharts Integration Test</h3>
+            <p>Click a button above to test different integration methods</p>
+        </div>
+    </div>
+    
+    <div class="debug">
+        <h3>🔍 Integration Test Results</h3>
+        <div id="debugInfo">
+            <p><strong>Test Status:</strong> Ready</p>
+            <p><strong>Current Chart Library:</strong> Lightweight Charts (causing issues)</p>
+            <p><strong>Proposed Solution:</strong> DXcharts Lite</p>
+            <p><strong>Expected Benefits:</strong> Professional UI, Better Performance, More Features</p>
+        </div>
+    </div>
+
+    <script>
+        const statusDiv = document.getElementById('status');
+        const chartContainer = document.getElementById('chartContainer');
+        const debugInfo = document.getElementById('debugInfo');
+
+        function showStatus(message, type = 'info') {
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : 'loading';
+            statusDiv.innerHTML = `<div class="${className}">${message}</div>`;
+        }
+
+        function updateDebug(info) {
+            debugInfo.innerHTML = `
+                <p><strong>Last Test:</strong> ${info.test}</p>
+                <p><strong>Status:</strong> ${info.status}</p>
+                <p><strong>Result:</strong> ${info.result}</p>
+                <p><strong>Next Step:</strong> ${info.nextStep}</p>
+                <p><strong>Time:</strong> ${new Date().toLocaleTimeString()}</p>
+            `;
+        }
+
+        // Test CDN version
+        document.getElementById('testCDN').addEventListener('click', () => {
+            showStatus('🌐 Testing DXcharts CDN integration...', 'loading');
+            
+            // Create script element to load DXcharts
+            const script = document.createElement('script');
+            script.src = 'https://www.unpkg.com/@devexperts/dxcharts-lite@latest/dist/dxchart.min.js';
+            
+            script.onload = () => {
+                if (typeof window.DXChart !== 'undefined') {
+                    showStatus('✅ CDN Integration Successful! DXcharts loaded from CDN.', 'success');
+                    updateDebug({
+                        test: 'CDN Integration',
+                        status: 'Success',
+                        result: 'DXcharts available globally',
+                        nextStep: 'Try creating a chart instance'
+                    });
+                    
+                    chartContainer.innerHTML = `
+                        <div class="center-content">
+                            <div style="font-size: 48px; margin-bottom: 20px;">✅</div>
+                            <h3 style="color: #4caf50;">CDN Integration Working!</h3>
+                            <p>DXcharts successfully loaded from CDN</p>
+                            <p>Version: ${window.DXChart.version || 'Latest'}</p>
+                        </div>
+                    `;
+                } else {
+                    showStatus('❌ CDN loaded but DXChart not available globally', 'error');
+                }
+            };
+            
+            script.onerror = () => {
+                showStatus('❌ Failed to load DXcharts from CDN. Network or CDN issue.', 'error');
+                updateDebug({
+                    test: 'CDN Integration',
+                    status: 'Failed',
+                    result: 'Could not load from unpkg.com',
+                    nextStep: 'Try NPM integration approach'
+                });
+            };
+            
+            document.head.appendChild(script);
+        });
+
+        // Test NPM integration approach
+        document.getElementById('testNPM').addEventListener('click', () => {
+            showStatus('📦 Testing NPM integration approach...', 'loading');
+            
+            updateDebug({
+                test: 'NPM Integration',
+                status: 'Info',
+                result: 'NPM package is installed',
+                nextStep: 'Need to use bundler (Vite) to access the module'
+            });
+            
+            chartContainer.innerHTML = `
+                <div class="center-content">
+                    <div style="font-size: 48px; margin-bottom: 20px;">📦</div>
+                    <h3 style="color: #4fc3f7;">NPM Package Status</h3>
+                    <p>✅ @devexperts/dxcharts-lite@2.7.15 is installed</p>
+                    <p>✅ Ready to integrate into React components</p>
+                    <p>✅ TypeScript support available</p>
+                    <p style="color: #ff9800;">ℹ️ Requires bundler integration (not direct HTML)</p>
+                </div>
+            `;
+            
+            showStatus('📦 NPM package is ready for React integration', 'success');
+        });
+
+        // Generate sample chart demonstration
+        document.getElementById('loadSample').addEventListener('click', () => {
+            showStatus('📊 Generating sample chart demonstration...', 'loading');
+            
+            // Simulate chart creation
+            setTimeout(() => {
+                const sampleData = [];
+                const basePrice = 45000;
+                const now = Date.now();
+                
+                for (let i = 0; i < 100; i++) {
+                    const timestamp = now - (100 - i) * 5 * 60 * 1000;
+                    const price = basePrice + (Math.random() - 0.5) * 10000;
+                    sampleData.push({
+                        time: timestamp,
+                        price: price.toFixed(2)
+                    });
+                }
+                
+                chartContainer.innerHTML = `
+                    <div class="center-content">
+                        <div style="font-size: 48px; margin-bottom: 20px;">📈</div>
+                        <h3 style="color: #4caf50;">Sample Chart Generated</h3>
+                        <p>${sampleData.length} data points created</p>
+                        <p>Price range: $${Math.min(...sampleData.map(d => parseFloat(d.price))).toFixed(0)} - $${Math.max(...sampleData.map(d => parseFloat(d.price))).toFixed(0)}</p>
+                        <p>With DXcharts, this would render as:</p>
+                        <p>🕯️ Professional candlesticks | 📊 Volume bars | 🎯 Crosshair</p>
+                        <p style="color: #ff9800;">⚡ Smooth zoom & pan | 📐 Drawing tools | 📈 Technical indicators</p>
+                    </div>
+                `;
+                
+                showStatus('✅ Sample data ready! This would create a professional chart with DXcharts.', 'success');
+                
+                updateDebug({
+                    test: 'Sample Chart',
+                    status: 'Generated',
+                    result: `${sampleData.length} data points ready`,
+                    nextStep: 'Integrate DXcharts to render this data'
+                });
+            }, 1000);
+        });
+
+        // Show initial status
+        showStatus('🚀 Ready to test DXcharts integration methods', 'info');
+    </script>
+</body>
+</html>

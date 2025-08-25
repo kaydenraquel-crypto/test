@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DXCharts Lite Test - NovaSignal</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #0f0f0f;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        
+        .header {
+            margin-bottom: 20px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background-color: #555;
+        }
+        
+        .btn.active {
+            background-color: #4fc3f7;
+        }
+        
+        .btn:disabled {
+            background-color: #222;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            margin-bottom: 10px;
+        }
+        
+        .error {
+            background-color: #2d1b1b;
+            color: #f44336;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        
+        .loading {
+            color: #4fc3f7;
+            margin-bottom: 10px;
+        }
+        
+        #chartContainer {
+            width: 100%;
+            height: 500px;
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            margin-bottom: 20px;
+        }
+        
+        .debug {
+            background-color: #1a1a1a;
+            padding: 15px;
+            border-radius: 4px;
+            color: #a0a0a0;
+            font-size: 14px;
+        }
+        
+        .debug h3 {
+            color: #4fc3f7;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 style="color: #4fc3f7;">🚀 DXCharts Lite Test - NovaSignal</h1>
+        <div class="status">
+            <span><strong>Symbol:</strong> BTCUSDT (crypto)</span>
+            <span id="priceInfo"></span>
+            <span id="dataInfo"></span>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button id="sampleBtn" class="btn active">📊 Load Sample Data</button>
+        <button id="realBtn" class="btn">🌐 Load Real Data</button>
+        <button id="reloadBtn" class="btn" style="background-color: #ff9800;">🔄 Reload</button>
+        <a href="/" class="btn" style="background-color: #f44336; text-decoration: none;">← Back to Main App</a>
+    </div>
+    
+    <div id="status"></div>
+    <div id="chartContainer"></div>
+    
+    <div class="debug">
+        <h3>🔍 Debug Info</h3>
+        <div id="debugInfo">Loading...</div>
+    </div>
+
+    <script type="module">
+        let chart = null;
+        let chartData = [];
+        let isLoading = false;
+        let dataSource = 'none';
+
+        // UI Elements
+        const chartContainer = document.getElementById('chartContainer');
+        const sampleBtn = document.getElementById('sampleBtn');
+        const realBtn = document.getElementById('realBtn');
+        const reloadBtn = document.getElementById('reloadBtn');
+        const statusDiv = document.getElementById('status');
+        const priceInfo = document.getElementById('priceInfo');
+        const dataInfo = document.getElementById('dataInfo');
+        const debugInfo = document.getElementById('debugInfo');
+
+        // Generate sample data
+        function generateSampleData(count = 200) {
+            const data = [];
+            const basePrice = 45000;
+            const baseTimestamp = Date.now() - (count * 5 * 60 * 1000); // 5 minutes apart
+            
+            let price = basePrice;
+            
+            for (let i = 0; i < count; i++) {
+                const timestamp = baseTimestamp + (i * 5 * 60 * 1000);
+                const change = (Math.random() - 0.5) * 1000;
+                const open = price;
+                const close = Math.max(1000, open + change);
+                const high = Math.max(open, close) + Math.random() * 200;
+                const low = Math.min(open, close) - Math.random() * 200;
+                const volume = Math.random() * 100;
+                
+                data.push({
+                    timestamp: Math.floor(timestamp / 1000),
+                    open: Number(open.toFixed(2)),
+                    high: Number(high.toFixed(2)),
+                    low: Number(low.toFixed(2)),
+                    close: Number(close.toFixed(2)),
+                    volume: Number(volume.toFixed(4))
+                });
+                
+                price = close;
+            }
+            
+            return data;
+        }
+
+        // Update UI
+        function updateUI() {
+            const latestPrice = chartData.length > 0 ? chartData[chartData.length - 1].close : null;
+            const priceChange = chartData.length > 1 ? {
+                change: chartData[chartData.length - 1].close - chartData[chartData.length - 2].close,
+                isPositive: chartData[chartData.length - 1].close >= chartData[chartData.length - 2].close
+            } : null;
+
+            priceInfo.innerHTML = latestPrice ? 
+                `<strong>Price:</strong> $${latestPrice.toLocaleString()}` : '';
+            
+            if (priceChange) {
+                priceInfo.innerHTML += ` <span style="color: ${priceChange.isPositive ? '#4caf50' : '#f44336'}">
+                    ${priceChange.isPositive ? '+' : ''}${priceChange.change.toFixed(2)}
+                </span>`;
+            }
+
+            dataInfo.innerHTML = `<strong>Data:</strong> ${chartData.length} candles (${dataSource})`;
+
+            // Update debug info
+            debugInfo.innerHTML = `
+                Chart Data Length: ${chartData.length}<br>
+                Data Source: ${dataSource}<br>
+                Loading: ${isLoading ? 'Yes' : 'No'}<br>
+                Chart Instance: ${chart ? 'Active' : 'None'}<br>
+                ${chartData.length > 0 ? `
+                    First Candle: ${new Date(chartData[0].timestamp * 1000).toLocaleString()}<br>
+                    Last Candle: ${new Date(chartData[chartData.length - 1].timestamp * 1000).toLocaleString()}<br>
+                    Price Range: $${Math.min(...chartData.map(c => c.low)).toFixed(2)} - $${Math.max(...chartData.map(c => c.high)).toFixed(2)}
+                ` : ''}
+            `;
+        }
+
+        // Initialize DXChart
+        async function initChart() {
+            try {
+                console.log('🚀 Initializing DXChart...');
+                
+                // Import DXcharts
+                const DXChart = await import('@devexperts/dxcharts-lite');
+                
+                // Create chart
+                chart = DXChart.createChart(chartContainer, {
+                    theme: 'dark'
+                });
+                
+                console.log('✅ DXChart initialized successfully');
+                return true;
+                
+            } catch (error) {
+                console.error('❌ DXChart initialization failed:', error);
+                statusDiv.innerHTML = '<div class="error">⚠️ DXChart initialization failed: ' + error.message + '</div>';
+                return false;
+            }
+        }
+
+        // Update chart data
+        function updateChart() {
+            if (!chart || chartData.length === 0) return;
+            
+            try {
+                const dxData = chartData.map(candle => ({
+                    timestamp: candle.timestamp * 1000,
+                    open: candle.open,
+                    high: candle.high,
+                    low: candle.low,
+                    close: candle.close,
+                    volume: candle.volume || 0
+                }));
+                
+                chart.setData({ candles: dxData });
+                console.log('✅ Chart data updated successfully');
+                
+            } catch (error) {
+                console.error('❌ Chart update failed:', error);
+                statusDiv.innerHTML = '<div class="error">⚠️ Chart update failed: ' + error.message + '</div>';
+            }
+        }
+
+        // Load sample data
+        function loadSampleData() {
+            console.log('📊 Loading sample data...');
+            setLoading(true, 'sample');
+            
+            setTimeout(() => {
+                try {
+                    chartData = generateSampleData(200);
+                    dataSource = 'sample';
+                    updateChart();
+                    updateUI();
+                    setLoading(false);
+                    console.log('✅ Sample data loaded:', chartData.length, 'candles');
+                } catch (error) {
+                    console.error('❌ Sample data loading failed:', error);
+                    statusDiv.innerHTML = '<div class="error">⚠️ Sample data loading failed</div>';
+                    setLoading(false);
+                }
+            }, 500);
+        }
+
+        // Load real API data
+        async function loadRealData() {
+            console.log('🌐 Loading real API data...');
+            setLoading(true, 'api');
+
+            try {
+                const response = await fetch(
+                    'http://localhost:8000/api/history?symbol=BTCUSDT&market=crypto&interval=60&days=1'
+                );
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status} ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('🔍 API Response:', data);
+                
+                if (!data.ohlc || !Array.isArray(data.ohlc)) {
+                    throw new Error('Invalid API response format');
+                }
+                
+                // Convert API data
+                chartData = data.ohlc.map(item => ({
+                    timestamp: item.ts || item.time || item.timestamp,
+                    open: item.open,
+                    high: item.high,
+                    low: item.low,
+                    close: item.close,
+                    volume: item.volume || 0
+                })).filter(item => item.timestamp && item.open && item.high && item.low && item.close);
+                
+                if (chartData.length === 0) {
+                    throw new Error('No valid candle data received');
+                }
+                
+                dataSource = 'api';
+                updateChart();
+                updateUI();
+                setLoading(false);
+                console.log('✅ Real data loaded:', chartData.length, 'candles');
+                
+            } catch (error) {
+                console.error('❌ Real data loading failed:', error);
+                statusDiv.innerHTML = '<div class="error">⚠️ Real data loading failed: ' + error.message + '</div>';
+                setLoading(false);
+            }
+        }
+
+        // Set loading state
+        function setLoading(loading, source = 'none') {
+            isLoading = loading;
+            sampleBtn.disabled = loading;
+            realBtn.disabled = loading;
+            
+            if (loading) {
+                statusDiv.innerHTML = `<div class="loading">⏳ Loading ${source === 'api' ? 'real' : 'sample'} data...</div>`;
+                sampleBtn.classList.remove('active');
+                realBtn.classList.remove('active');
+            } else {
+                statusDiv.innerHTML = '';
+                if (source === 'sample') {
+                    sampleBtn.classList.add('active');
+                    realBtn.classList.remove('active');
+                } else if (source === 'api') {
+                    realBtn.classList.add('active');
+                    sampleBtn.classList.remove('active');
+                }
+            }
+            
+            updateUI();
+        }
+
+        // Event listeners
+        sampleBtn.addEventListener('click', loadSampleData);
+        realBtn.addEventListener('click', loadRealData);
+        reloadBtn.addEventListener('click', () => window.location.reload());
+
+        // Initialize
+        async function init() {
+            const chartReady = await initChart();
+            if (chartReady) {
+                loadSampleData(); // Load sample data by default
+            }
+        }
+
+        // Start
+        init();
+    </script>
+</body>
+</html>
