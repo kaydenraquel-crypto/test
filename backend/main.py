@@ -99,11 +99,11 @@ app.add_middleware(
         "http://127.0.0.1:5173",  # Alternative localhost
         "http://localhost:3000",  # Alternative React dev server
         "http://127.0.0.1:3000",  # Alternative localhost
-        "*"  # Allow all origins as fallback
+        # Removed "*" for security - no wildcard with credentials
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
+    allow_headers=["Content-Type", "Authorization", "Accept", "Origin", "X-Requested-With"],
 )
 
 # Include Alpha Vantage router
