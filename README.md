@@ -284,3 +284,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Made with ❤️ by the NovaSignal Team**
 
 *Professional trading tools for the modern trader*
+
+---
+
+**Note**: Project now includes component-based agents and PR overlap detection for improved development workflow.

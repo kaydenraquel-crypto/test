@@ -1,0 +1,6 @@
+{
+  "project": "NovaSignal",
+  "default_supervisor": "project-supervisor",
+  "enforce_scopes": true,
+  "brief_path": "master_brief.md"
+}

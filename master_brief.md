@@ -1,12 +1,13 @@
 # NovaSignal — Master Brief
-_Updated: 2025-08-26_
-
-See `component_map.yaml` for ownership. Use `.claude/agents/*` for file-based Claude Code agents.
+Read this first. Agents must:
+- Work within their component scope (see `component_map.yaml`)
+- Write tests and update §6 Work Log
+- Open PRs; CODEOWNERS review is required
 
 ## Phases
-- Stabilize
-- Grow
-- Harden
+1) Stabilize (providers, error boundaries) 
+2) Grow (charts v2, signals/backtests, AI flows)
+3) Harden (perf, E2E, packaging)
 
-## Work Log (§6)
-Append Date / Branch / Scope / Decisions / Risks.
+## §6 Work Log (append)
+- Date / Agent / Component / Files touched / Decisions / Next
