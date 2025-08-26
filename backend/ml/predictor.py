@@ -185,7 +185,7 @@ def predict_prices_multi_horizon(ohlc: List[Dict[str, Any]], horizons: List[str]
     
     # Learning rate scheduler
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode='min', factor=0.5, patience=5, verbose=False
+        optimizer, mode='min', factor=0.5, patience=5
     )
     
     # Convert to tensors
