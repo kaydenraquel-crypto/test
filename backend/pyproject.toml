@@ -1,0 +1,46 @@
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = [
+    "-ra",
+    "-q",
+    "--strict-markers",
+    "--strict-config"
+]
+testpaths = [
+    "."
+]
+python_files = [
+    "test_*.py"
+]
+python_classes = [
+    "Test*"
+]
+python_functions = [
+    "test_*"
+]
+markers = [
+    "slow: marks tests as slow",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests"
+]
+
+[tool.coverage.run]
+source = ["."]
+omit = [
+    "test_*.py",
+    "debug_*.py",
+    "*/__pycache__/*",
+    ".pytest_cache/*"
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:"
+]
