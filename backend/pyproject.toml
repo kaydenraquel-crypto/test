@@ -2,9 +2,10 @@
 minversion = "6.0"
 addopts = [
     "-ra",
-    "-q",
+    "-s",
     "--strict-markers",
-    "--strict-config"
+    "--strict-config",
+    "--tb=short"
 ]
 testpaths = [
     "."
