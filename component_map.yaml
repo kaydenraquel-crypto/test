@@ -1,0 +1,51 @@
+components:
+  frontend:
+    paths:
+      - /frontend/**
+    owners: [@kaydenraquel-crypto]
+  charts:
+    paths:
+      - /frontend/src/features/charts/**
+      - /backend/app/routers/market_data.py
+    owners: [@kaydenraquel-crypto]
+  backend-api:
+    paths:
+      - /backend/app/routers/**
+      - /backend/app/schemas/**
+      - /backend/app/dependencies/**
+    owners: [@kaydenraquel-crypto]
+  market-data:
+    paths:
+      - /backend/app/providers/**
+      - /backend/app/services/market_data/**
+    owners: [@kaydenraquel-crypto]
+  signals-engine:
+    paths:
+      - /backend/app/signals/**
+      - /backend/app/backtesting/**
+    owners: [@kaydenraquel-crypto]
+  ai-engine:
+    paths:
+      - /fingpt_server/**
+    owners: [@kaydenraquel-crypto]
+  installer:
+    paths:
+      - /installer/**
+      - /install.ps1
+    owners: [@kaydenraquel-crypto]
+  helm-k8s:
+    paths:
+      - /helm/**
+    owners: [@kaydenraquel-crypto]
+  ci-cd:
+    paths:
+      - /.github/workflows/**
+    owners: [@kaydenraquel-crypto]
+  docs:
+    paths:
+      - /docs/**
+      - /README.md
+      - /project_progress_summary.md
+      - /project_todo.md
+      - /CHANGELOG.md
+    owners: [@kaydenraquel-crypto]

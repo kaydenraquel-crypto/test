@@ -1,0 +1,42 @@
+[
+  {
+    "name": "comp:frontend",
+    "color": "1f6feb"
+  },
+  {
+    "name": "comp:charts",
+    "color": "1f6feb"
+  },
+  {
+    "name": "comp:backend-api",
+    "color": "1f6feb"
+  },
+  {
+    "name": "comp:market-data",
+    "color": "1f6feb"
+  },
+  {
+    "name": "comp:signals-engine",
+    "color": "1f6feb"
+  },
+  {
+    "name": "comp:ai-engine",
+    "color": "1f6feb"
+  },
+  {
+    "name": "comp:installer",
+    "color": "1f6feb"
+  },
+  {
+    "name": "comp:helm-k8s",
+    "color": "1f6feb"
+  },
+  {
+    "name": "comp:ci-cd",
+    "color": "1f6feb"
+  },
+  {
+    "name": "comp:docs",
+    "color": "1f6feb"
+  }
+]
