@@ -25,7 +25,7 @@ from connectors.stocks_alpaca import alpaca_stream_available, stream_alpaca_bars
 from connectors.crypto_router import fetch_history_crypto
 from signals.indicators import compute_indicators
 from signals.strategies import combined_signals
-from routers import alpha_vantage
+from routers import alpha_vantage, symbols
 
 # ---------- Torch / ML predictor guard ----------
 HAVE_TORCH_MODEL = False
@@ -106,8 +106,9 @@ app.add_middleware(
     allow_headers=["Content-Type", "Authorization", "Accept", "Origin", "X-Requested-With"],
 )
 
-# Include Alpha Vantage router
+# Include routers
 app.include_router(alpha_vantage.router)
+app.include_router(symbols.router)
 
 # ------------------ Request Schemas ------------------
 
