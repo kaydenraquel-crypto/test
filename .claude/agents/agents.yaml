@@ -1,0 +1,441 @@
+# Claude Code subagents for NovaSignal
+agents:
+  - id: frontend-dev
+    name: Frontend Core
+    description: React + TypeScript app architecture, routing, shared state, DX
+    scope_include:
+      - frontend/**
+    scope_exclude:
+      - frontend/**/__tests__/**
+      - frontend/**/dist/**
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the Frontend Core.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:frontend-dev (or closest component), create branch feat/frontend-dev/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: charting-dev
+    name: Charting Specialist
+    description: "Lightweight Charts integration, multi-pane studies, overlays, performance tuning"
+    scope_include:
+      - frontend/src/features/charts/**
+      - backend/app/routers/market_data.py
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the Charting Specialist.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:charting-dev (or closest component), create branch feat/charting-dev/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: symbol-search
+    name: Symbol Search
+    description: Smart symbol finder, autocomplete, keyboard nav, favorites
+    scope_include:
+      - "frontend/src/features/symbol-search/**"
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the Symbol Search.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:symbol-search (or closest component), create branch feat/symbol-search/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: alerts-watchlist
+    name: Watchlist & Alerts
+    description: Watchlist CRUD, alert rules/UX, notifications and persistence
+    scope_include:
+      - frontend/src/features/watchlist/**
+      - frontend/src/features/alerts/**
+      - backend/app/routers/alerts.py
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the Watchlist & Alerts.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:alerts-watchlist (or closest component), create branch feat/alerts-watchlist/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: market-scanner
+    name: Market Scanner UI
+    description: Screeners, filters, presets, pagination, saved views
+    scope_include:
+      - frontend/src/features/scanner/**
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the Market Scanner UI.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:market-scanner (or closest component), create branch feat/market-scanner/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: news-ui
+    name: News & Research UI
+    description: News feed components, relevance tags, summaries display
+    scope_include:
+      - frontend/src/features/news/**
+      - backend/app/routers/news.py
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the News & Research UI.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:news-ui (or closest component), create branch feat/news-ui/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: analytics-ui
+    name: Analytics Dashboard UI
+    description: KPI widgets, layout persistence, drilldowns
+    scope_include:
+      - frontend/src/features/analytics/**
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the Analytics Dashboard UI.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:analytics-ui (or closest component), create branch feat/analytics-ui/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: portfolio-ui
+    name: Portfolio & Orders UI
+    description: Holdings/P&L views, order ticket UX, broker hooks (frontend)
+    scope_include:
+      - frontend/src/features/portfolio/**
+      - frontend/src/features/orders/**
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the Portfolio & Orders UI.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:portfolio-ui (or closest component), create branch feat/portfolio-ui/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: backtest-ui
+    name: Backtest Results UI
+    description: Run comparison, equity curves, distribution charts, export
+    scope_include:
+      - frontend/src/features/backtest/**
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the Backtest Results UI.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:backtest-ui (or closest component), create branch feat/backtest-ui/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: settings-ui
+    name: Settings & Preferences
+    description: Theme, hotkeys, user prefs, local/remote storage
+    scope_include:
+      - frontend/src/features/settings/**
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the Settings & Preferences.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:settings-ui (or closest component), create branch feat/settings-ui/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: design-system
+    name: Design System & Shared Components
+    description: Reusable components, tokens, icons, docs
+    scope_include:
+      - frontend/src/components/**
+      - frontend/src/shared/**
+      - Theme/**
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the Design System & Shared Components.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:design-system (or closest component), create branch feat/design-system/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: backend-api
+    name: API Gateway & Routers
+    description: FastAPI routers, DTOs, auth middleware, error handling
+    scope_include:
+      - backend/app/routers/**
+      - backend/app/schemas/**
+      - backend/app/dependencies/**
+    scope_exclude:
+      - backend/app/routers/ai.py
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the API Gateway & Routers.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:backend-api (or closest component), create branch feat/backend-api/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: market-data
+    name: Market Data Connectors
+    description: Exchange/provider adapters, retries, caching, rate limits
+    scope_include:
+      - backend/app/providers/**
+      - backend/app/services/market_data/**
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the Market Data Connectors.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:market-data (or closest component), create branch feat/market-data/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: realtime-stream
+    name: Realtime/WebSocket
+    description: Streaming endpoints, topic fanout, backpressure, reconnection
+    scope_include:
+      - backend/app/websocket/**
+      - backend/app/routers/ws/**
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the Realtime/WebSocket.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:realtime-stream (or closest component), create branch feat/realtime-stream/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: signals-engine
+    name: Signals & Backtesting Engine
+    description: Indicators/strategies library, parameter sweeps, backtester core
+    scope_include:
+      - backend/app/signals/**
+      - backend/app/backtesting/**
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the Signals & Backtesting Engine.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:signals-engine (or closest component), create branch feat/signals-engine/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: data-persistence
+    name: Data Model & Persistence
+    description: DB schema/migrations, caching, symbol/timeframe mapping
+    scope_include:
+      - backend/app/models/**
+      - backend/app/db/**
+      - backend/migrations/**
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the Data Model & Persistence.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:data-persistence (or closest component), create branch feat/data-persistence/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: news-service
+    name: News Aggregator Service
+    description: Fetch, dedupe, enrich, and score news; API for UI
+    scope_include:
+      - backend/app/services/news/**
+      - backend/app/routers/news.py
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the News Aggregator Service.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:news-service (or closest component), create branch feat/news-service/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: ai-engine
+    name: AI/FinGPT Service
+    description: FinGPT server, prompt flows, safety guards, eval harness
+    scope_include:
+      - fingpt_server/**
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the AI/FinGPT Service.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:ai-engine (or closest component), create branch feat/ai-engine/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: ai-router
+    name: AI Router & Tools
+    description: LLM routing, tools/functions, context builders, embeddings
+    scope_include:
+      - backend/app/routers/ai.py
+      - backend/app/services/ai/**
+      - backend/app/ml/**
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the AI Router & Tools.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:ai-router (or closest component), create branch feat/ai-router/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: installer-win
+    name: Windows Installer Wizard
+    description: "Electron wizard UI, .env capture/validation, first-run checks"
+    scope_include:
+      - installer/**
+      - install.ps1
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the Windows Installer Wizard.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:installer-win (or closest component), create branch feat/installer-win/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: ci-cd
+    name: CI/CD Pipeline
+    description: GitHub Actions, caches, test gates, artifacts, release jobs
+    scope_include:
+      - .github/workflows/**
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the CI/CD Pipeline.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:ci-cd (or closest component), create branch feat/ci-cd/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: containerization
+    name: Containerization
+    description: "Dockerfiles, multi-stage/arch builds, image hardening"
+    scope_include:
+      - Dockerfile
+      - docker/**
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the Containerization.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:containerization (or closest component), create branch feat/containerization/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: helm-k8s
+    name: Helm/Kubernetes Packaging
+    description: Helm chart, values, templates, env/secrets wiring
+    scope_include:
+      - helm/**
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the Helm/Kubernetes Packaging.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:helm-k8s (or closest component), create branch feat/helm-k8s/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: observability
+    name: Observability
+    description: Structured logs, metrics, tracing, dashboards, error reporting
+    scope_include:
+      - backend/app/observability/**
+      - docs/observability/**
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the Observability.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:observability (or closest component), create branch feat/observability/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: security
+    name: Security & Compliance
+    description: "Secrets, SBOM/Trivy, dependency policies, supply-chain checks"
+    scope_include:
+      - .github/workflows/**
+      - helm/**
+      - backend/app/security/**
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the Security & Compliance.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:security (or closest component), create branch feat/security/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: test-specialist
+    name: Testing Specialist
+    description: Unit/integration tests, coverage, fixtures, test data
+    scope_include:
+      - tests/**
+      - frontend/**/__tests__/**
+      - backend/tests/**
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the Testing Specialist.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:test-specialist (or closest component), create branch feat/test-specialist/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: e2e-specialist
+    name: E2E & Visual Regression
+    description: Playwright/Cypress, visual baselines, flow reliability
+    scope_include:
+      - e2e/**
+      - frontend/**/e2e/**
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the E2E & Visual Regression.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:e2e-specialist (or closest component), create branch feat/e2e-specialist/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: docs-writer
+    name: Docs Writer
+    description: User/dev docs, API refs, changelog/release notes
+    scope_include:
+      - docs/**
+      - README.md
+      - project_progress_summary.md
+      - project_todo.md
+      - CHANGELOG.md
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the Docs Writer.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:docs-writer (or closest component), create branch feat/docs-writer/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: theme-assets
+    name: Theme & Branding
+    description: NovaSignal/SuperNova logos, icons, themes, export pipeline
+    scope_include:
+      - Theme/**
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the Theme & Branding.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:theme-assets (or closest component), create branch feat/theme-assets/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: patches-maintainer
+    name: Patches & Migrations
+    description: Own /patches diffs/migrations and apply safely
+    scope_include:
+      - patches/**
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the Patches & Migrations.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:patches-maintainer (or closest component), create branch feat/patches-maintainer/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
+
+  - id: bootstrap-scripts
+    name: Bootstrap & Start Scripts
+    description: "Maintain start-*.bat/ps1/sh and validate-setup.js"
+    scope_include:
+      - "start-*.bat"
+      - "start-*.ps1"
+      - "start-*.sh"
+      - "validate-setup.js"
+    startup_prompt: |
+      Read master_brief.md and component_map.yaml. You are the Bootstrap & Start Scripts.
+      - Only modify files that match your allowed scope (scope_include minus scope_exclude).
+      - Before coding: pick/claim an issue labeled comp:bootstrap-scripts (or closest component), create branch feat/bootstrap-scripts/<issue>-<slug>.
+      - Update master_brief.md §8 (daily entry) and CHANGELOG.md.
+      - Open a PR using the template and request CODEOWNERS.
+      - If you need cross-component changes, open a separate PR and tag the owning agent.
