@@ -47,7 +47,9 @@
       "Bash(git remote set-url:*)",
       "Bash(git push:*)",
       "Read(/C:\\Users\\iseel\\Downloads/**)",
-      "Read(/C:\\Users\\iseel\\Downloads/**)"
+      "Read(/C:\\Users\\iseel\\Downloads/**)",
+      "Bash(git checkout:*)",
+      "Bash(git stash:*)"
     ],
     "deny": [],
     "ask": [],
