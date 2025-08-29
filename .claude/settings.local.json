@@ -50,9 +50,9 @@
       "Read(/C:\\Users\\iseel\\Downloads/**)",
       "Bash(git cherry-pick:*)",
       "Bash(git checkout:*)",
-      "Bash(dir:*)",
+      "Bash(git merge:*)",
       "Bash(git stash:*)",
-      "Bash(git merge:*)"
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": [],

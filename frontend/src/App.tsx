@@ -842,7 +842,7 @@ export default function App() {
 
   // Enhanced history loading with validation and rate limiting
   useEffect(() => {
-    let timeoutId: number
+    let timeoutId: NodeJS.Timeout | number
 
     async function loadHistory() {
       // Clear any existing timeout
@@ -889,15 +889,17 @@ export default function App() {
           }
           if (arr.length > 1) {
             const last = arr[arr.length - 1]
-            console.log('📊 Last NORMALIZED candle:', {
-              time: last.time,
-              date: new Date((last.time as number) * 1000).toLocaleString(),
-              open: last.open,
-              high: last.high,
-              low: last.low,
-              close: last.close,
-              range: (last.high - last.low).toFixed(4)
-            })
+            if (last) {
+              console.log('📊 Last NORMALIZED candle:', {
+                time: last.time,
+                date: new Date((last.time as number) * 1000).toLocaleString(),
+                open: last.open,
+                high: last.high,
+                low: last.low,
+                close: last.close,
+                range: (last.high - last.low).toFixed(4)
+              })
+            }
           }
           
           // Track API call
@@ -999,13 +1001,16 @@ export default function App() {
   const chartSignals = useMemo((): TradingSignal[] => {
     if (!signals || !Array.isArray(signals)) return []
     
-    return signals.map(signal => ({
-      ts: typeof signal.ts === 'number' ? signal.ts : 0,
-      type: signal.type === 'buy' ? 'buy' : 'sell',
-      reason: signal.reason || '',
-      price: typeof signal.price === 'number' ? signal.price : 0,
-      tag: signal.tag
-    })).filter(signal => signal.ts > 0 && signal.price > 0)
+    return signals
+      .filter((signal: any) => signal && typeof signal === 'object')
+      .map((signal: any): TradingSignal => ({
+        ts: typeof signal.ts === 'number' ? signal.ts : 0,
+        type: (signal.type === 'buy' || signal.type === 'sell') ? signal.type : 'buy',
+        reason: signal.reason || '',
+        price: typeof signal.price === 'number' ? signal.price : 0,
+        tag: signal.tag
+      }))
+      .filter(signal => signal.ts > 0 && signal.price > 0)
   }, [signals])
 
   // Debug: Expose chart data to window object
@@ -1052,7 +1057,7 @@ export default function App() {
 
   // Enhanced indicators loading with validation
   useEffect(() => {
-    let timeoutId: number
+    let timeoutId: NodeJS.Timeout | number
 
     async function loadIndicators() {
       // Clear any existing timeout
