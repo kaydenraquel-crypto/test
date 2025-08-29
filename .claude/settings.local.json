@@ -48,8 +48,11 @@
       "Bash(git push:*)",
       "Read(/C:\\Users\\iseel\\Downloads/**)",
       "Read(/C:\\Users\\iseel\\Downloads/**)",
+      "Bash(git cherry-pick:*)",
       "Bash(git checkout:*)",
-      "Bash(git stash:*)"
+      "Bash(dir:*)",
+      "Bash(git stash:*)",
+      "Bash(git merge:*)"
     ],
     "deny": [],
     "ask": [],

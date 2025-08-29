@@ -90,7 +90,7 @@ jobs:
 
       - name: 🧪 Run Tests
         working-directory: ./backend
-        run: pytest --cov=app --cov-report=xml
+        run: python -m pytest -s --tb=short
 
       - name: 📊 Upload Coverage  
         uses: codecov/codecov-action@v3
