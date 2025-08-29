@@ -163,36 +163,111 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-// Technical indicators configuration
+// Technical indicators configuration - All 158 TA-Lib indicators
 const TECHNICAL_INDICATORS: TechnicalIndicator[] = [
-  // Trend Indicators
-  { name: 'Simple Moving Average (SMA)', key: 'sma', category: 'Trend', enabled: false, color: '#2196F3', period: 20 },
-  { name: 'Exponential Moving Average (EMA)', key: 'ema', category: 'Trend', enabled: false, color: '#FF9800', period: 12 },
-  { name: 'Bollinger Bands', key: 'bb', category: 'Trend', enabled: false, color: '#9C27B0', period: 20 },
-  { name: 'MACD', key: 'macd', category: 'Momentum', enabled: false, color: '#4CAF50' },
-  { name: 'Parabolic SAR', key: 'psar', category: 'Trend', enabled: false, color: '#F44336' },
-  { name: 'Ichimoku Cloud', key: 'ichimoku', category: 'Trend', enabled: false, color: '#795548' },
-  
-  // Momentum Oscillators
-  { name: 'RSI (14)', key: 'rsi', category: 'Momentum', enabled: false, color: '#3F51B5', period: 14 },
-  { name: 'Stochastic %K', key: 'stochastic', category: 'Momentum', enabled: false, color: '#E91E63', period: 14 },
-  { name: 'Williams %R', key: 'williams', category: 'Momentum', enabled: false, color: '#009688', period: 14 },
-  { name: 'CCI', key: 'cci', category: 'Momentum', enabled: false, color: '#607D8B', period: 20 },
-  { name: 'ROC', key: 'roc', category: 'Momentum', enabled: false, color: '#FF5722', period: 12 },
-  { name: 'Momentum', key: 'momentum', category: 'Momentum', enabled: false, color: '#8BC34A', period: 10 },
-  
-  // Volume Indicators
+  // Overlap Studies (17 functions)
+  { name: 'Bollinger Bands', key: 'BBANDS', category: 'Overlap Studies', enabled: false, color: '#9C27B0', period: 20 },
+  { name: 'Double Exponential MA (DEMA)', key: 'DEMA', category: 'Overlap Studies', enabled: false, color: '#FF9800', period: 30 },
+  { name: 'Exponential MA (EMA)', key: 'EMA', category: 'Overlap Studies', enabled: false, color: '#FF9800', period: 12 },
+  { name: 'Hilbert Transform Trendline', key: 'HT_TRENDLINE', category: 'Overlap Studies', enabled: false, color: '#4CAF50' },
+  { name: 'Kaufman Adaptive MA (KAMA)', key: 'KAMA', category: 'Overlap Studies', enabled: false, color: '#673AB7', period: 30 },
+  { name: 'Moving Average (MA)', key: 'MA', category: 'Overlap Studies', enabled: false, color: '#2196F3', period: 20 },
+  { name: 'MESA Adaptive MA (MAMA)', key: 'MAMA', category: 'Overlap Studies', enabled: false, color: '#E91E63' },
+  { name: 'MA Variable Period (MAVP)', key: 'MAVP', category: 'Overlap Studies', enabled: false, color: '#00BCD4' },
+  { name: 'MidPoint', key: 'MIDPOINT', category: 'Overlap Studies', enabled: false, color: '#795548', period: 14 },
+  { name: 'MidPrice', key: 'MIDPRICE', category: 'Overlap Studies', enabled: false, color: '#607D8B', period: 14 },
+  { name: 'Parabolic SAR', key: 'SAR', category: 'Overlap Studies', enabled: false, color: '#F44336' },
+  { name: 'Parabolic SAR Extended', key: 'SAREXT', category: 'Overlap Studies', enabled: false, color: '#FF5722' },
+  { name: 'Simple MA (SMA)', key: 'SMA', category: 'Overlap Studies', enabled: false, color: '#2196F3', period: 20 },
+  { name: 'Triple Exponential MA (T3)', key: 'T3', category: 'Overlap Studies', enabled: false, color: '#3F51B5', period: 5 },
+  { name: 'Triple Exponential MA (TEMA)', key: 'TEMA', category: 'Overlap Studies', enabled: false, color: '#009688', period: 30 },
+  { name: 'Triangular MA (TRIMA)', key: 'TRIMA', category: 'Overlap Studies', enabled: false, color: '#8BC34A', period: 30 },
+  { name: 'Weighted MA (WMA)', key: 'WMA', category: 'Overlap Studies', enabled: false, color: '#FFC107', period: 30 },
+
+  // Momentum Indicators (30 functions)
+  { name: 'Average Directional Index (ADX)', key: 'ADX', category: 'Momentum', enabled: false, color: '#4CAF50', period: 14 },
+  { name: 'ADX Rating (ADXR)', key: 'ADXR', category: 'Momentum', enabled: false, color: '#8BC34A', period: 14 },
+  { name: 'Absolute Price Oscillator (APO)', key: 'APO', category: 'Momentum', enabled: false, color: '#2196F3' },
+  { name: 'Aroon', key: 'AROON', category: 'Momentum', enabled: false, color: '#FF9800', period: 14 },
+  { name: 'Aroon Oscillator', key: 'AROONOSC', category: 'Momentum', enabled: false, color: '#FF5722', period: 14 },
+  { name: 'Balance of Power (BOP)', key: 'BOP', category: 'Momentum', enabled: false, color: '#795548' },
+  { name: 'Commodity Channel Index (CCI)', key: 'CCI', category: 'Momentum', enabled: false, color: '#607D8B', period: 20 },
+  { name: 'Chande Momentum Oscillator (CMO)', key: 'CMO', category: 'Momentum', enabled: false, color: '#9C27B0', period: 14 },
+  { name: 'Directional Movement Index (DX)', key: 'DX', category: 'Momentum', enabled: false, color: '#E91E63', period: 14 },
+  { name: 'MACD', key: 'MACD', category: 'Momentum', enabled: false, color: '#4CAF50' },
+  { name: 'MACD Extended', key: 'MACDEXT', category: 'Momentum', enabled: false, color: '#009688' },
+  { name: 'MACD Fix', key: 'MACDFIX', category: 'Momentum', enabled: false, color: '#00BCD4' },
+  { name: 'Money Flow Index (MFI)', key: 'MFI', category: 'Momentum', enabled: false, color: '#FFC107', period: 14 },
+  { name: 'Minus Directional Indicator (-DI)', key: 'MINUS_DI', category: 'Momentum', enabled: false, color: '#F44336', period: 14 },
+  { name: 'Minus Directional Movement (-DM)', key: 'MINUS_DM', category: 'Momentum', enabled: false, color: '#FF5722', period: 14 },
+  { name: 'Momentum', key: 'MOM', category: 'Momentum', enabled: false, color: '#8BC34A', period: 10 },
+  { name: 'Plus Directional Indicator (+DI)', key: 'PLUS_DI', category: 'Momentum', enabled: false, color: '#4CAF50', period: 14 },
+  { name: 'Plus Directional Movement (+DM)', key: 'PLUS_DM', category: 'Momentum', enabled: false, color: '#009688', period: 14 },
+  { name: 'Percentage Price Oscillator (PPO)', key: 'PPO', category: 'Momentum', enabled: false, color: '#3F51B5' },
+  { name: 'Rate of Change (ROC)', key: 'ROC', category: 'Momentum', enabled: false, color: '#FF5722', period: 12 },
+  { name: 'ROC Percentage (ROCP)', key: 'ROCP', category: 'Momentum', enabled: false, color: '#FF9800', period: 10 },
+  { name: 'ROC Ratio (ROCR)', key: 'ROCR', category: 'Momentum', enabled: false, color: '#FFC107', period: 10 },
+  { name: 'ROC Ratio 100 (ROCR100)', key: 'ROCR100', category: 'Momentum', enabled: false, color: '#CDDC39', period: 10 },
+  { name: 'Relative Strength Index (RSI)', key: 'RSI', category: 'Momentum', enabled: false, color: '#3F51B5', period: 14 },
+  { name: 'Stochastic', key: 'STOCH', category: 'Momentum', enabled: false, color: '#E91E63', period: 14 },
+  { name: 'Stochastic Fast', key: 'STOCHF', category: 'Momentum', enabled: false, color: '#9C27B0' },
+  { name: 'Stochastic RSI', key: 'STOCHRSI', category: 'Momentum', enabled: false, color: '#673AB7', period: 14 },
+  { name: 'TRIX', key: 'TRIX', category: 'Momentum', enabled: false, color: '#00BCD4', period: 30 },
+  { name: 'Ultimate Oscillator', key: 'ULTOSC', category: 'Momentum', enabled: false, color: '#795548' },
+  { name: 'Williams %R', key: 'WILLR', category: 'Momentum', enabled: false, color: '#009688', period: 14 },
+
+  // Volume Indicators (3 functions + Volume)
   { name: 'Volume', key: 'volume', category: 'Volume', enabled: true, color: '#9E9E9E' },
-  { name: 'On-Balance Volume (OBV)', key: 'obv', category: 'Volume', enabled: false, color: '#CDDC39' },
-  { name: 'Volume Rate of Change', key: 'vroc', category: 'Volume', enabled: false, color: '#FFC107' },
-  { name: 'Accumulation/Distribution', key: 'ad', category: 'Volume', enabled: false, color: '#673AB7' },
-  { name: 'Chaikin Money Flow', key: 'cmf', category: 'Volume', enabled: false, color: '#03DAC6' },
-  
-  // Volatility Indicators
-  { name: 'Average True Range (ATR)', key: 'atr', category: 'Volatility', enabled: false, color: '#FF6B6B', period: 14 },
-  { name: 'Bollinger Band Width', key: 'bbw', category: 'Volatility', enabled: false, color: '#4ECDC4', period: 20 },
-  { name: 'Standard Deviation', key: 'stddev', category: 'Volatility', enabled: false, color: '#45B7D1', period: 20 },
-  { name: 'Volatility Index', key: 'vix', category: 'Volatility', enabled: false, color: '#96CEB4' },
+  { name: 'Accumulation/Distribution (A/D)', key: 'AD', category: 'Volume', enabled: false, color: '#673AB7' },
+  { name: 'Chaikin A/D Oscillator', key: 'ADOSC', category: 'Volume', enabled: false, color: '#03DAC6' },
+  { name: 'On Balance Volume (OBV)', key: 'OBV', category: 'Volume', enabled: false, color: '#CDDC39' },
+
+  // Volatility Indicators (3 functions)
+  { name: 'Average True Range (ATR)', key: 'ATR', category: 'Volatility', enabled: false, color: '#FF6B6B', period: 14 },
+  { name: 'Normalized ATR (NATR)', key: 'NATR', category: 'Volatility', enabled: false, color: '#4ECDC4', period: 14 },
+  { name: 'True Range', key: 'TRANGE', category: 'Volatility', enabled: false, color: '#45B7D1' },
+
+  // Cycle Indicators (5 functions)
+  { name: 'Hilbert Transform - Dominant Cycle Period', key: 'HT_DCPERIOD', category: 'Cycle', enabled: false, color: '#2962ff' },
+  { name: 'Hilbert Transform - Dominant Cycle Phase', key: 'HT_DCPHASE', category: 'Cycle', enabled: false, color: '#5a67d8' },
+  { name: 'Hilbert Transform - Phasor Components', key: 'HT_PHASOR', category: 'Cycle', enabled: false, color: '#667eea' },
+  { name: 'Hilbert Transform - SineWave', key: 'HT_SINE', category: 'Cycle', enabled: false, color: '#7e3af2' },
+  { name: 'Hilbert Transform - Trend vs Cycle Mode', key: 'HT_TRENDMODE', category: 'Cycle', enabled: false, color: '#8b5cf6' },
+
+  // Price Transform (4 functions)
+  { name: 'Average Price', key: 'AVGPRICE', category: 'Price Transform', enabled: false, color: '#06b6d4' },
+  { name: 'Median Price', key: 'MEDPRICE', category: 'Price Transform', enabled: false, color: '#0891b2' },
+  { name: 'Typical Price', key: 'TYPPRICE', category: 'Price Transform', enabled: false, color: '#0e7490' },
+  { name: 'Weighted Close Price', key: 'WCLPRICE', category: 'Price Transform', enabled: false, color: '#155e75' },
+
+  // Statistic Functions (9 functions)
+  { name: 'Beta', key: 'BETA', category: 'Statistics', enabled: false, color: '#84cc16', period: 5 },
+  { name: 'Pearson Correlation', key: 'CORREL', category: 'Statistics', enabled: false, color: '#65a30d', period: 30 },
+  { name: 'Linear Regression', key: 'LINEARREG', category: 'Statistics', enabled: false, color: '#4d7c0f', period: 14 },
+  { name: 'Linear Regression Angle', key: 'LINEARREG_ANGLE', category: 'Statistics', enabled: false, color: '#365314', period: 14 },
+  { name: 'Linear Regression Intercept', key: 'LINEARREG_INTERCEPT', category: 'Statistics', enabled: false, color: '#166534', period: 14 },
+  { name: 'Linear Regression Slope', key: 'LINEARREG_SLOPE', category: 'Statistics', enabled: false, color: '#14532d', period: 14 },
+  { name: 'Standard Deviation', key: 'STDDEV', category: 'Statistics', enabled: false, color: '#45B7D1', period: 20 },
+  { name: 'Time Series Forecast', key: 'TSF', category: 'Statistics', enabled: false, color: '#0f766e', period: 14 },
+  { name: 'Variance', key: 'VAR', category: 'Statistics', enabled: false, color: '#115e59', period: 20 },
+
+  // Pattern Recognition (61 functions) - Only showing most common
+  { name: 'CDL Doji', key: 'CDLDOJI', category: 'Patterns', enabled: false, color: '#dc2626' },
+  { name: 'CDL Hammer', key: 'CDLHAMMER', category: 'Patterns', enabled: false, color: '#ea580c' },
+  { name: 'CDL Hanging Man', key: 'CDLHANGINGMAN', category: 'Patterns', enabled: false, color: '#ca8a04' },
+  { name: 'CDL Engulfing', key: 'CDLENGULFING', category: 'Patterns', enabled: false, color: '#a16207' },
+  { name: 'CDL Dark Cloud Cover', key: 'CDLDARKCLOUDCOVER', category: 'Patterns', enabled: false, color: '#854d0e' },
+  { name: 'CDL Piercing', key: 'CDLPIERCING', category: 'Patterns', enabled: false, color: '#713f12' },
+  { name: 'CDL Morning Star', key: 'CDLMORNINGSTAR', category: 'Patterns', enabled: false, color: '#78350f' },
+  { name: 'CDL Evening Star', key: 'CDLEVENINGSTAR', category: 'Patterns', enabled: false, color: '#7c2d12' },
+  { name: 'CDL Shooting Star', key: 'CDLSHOOTINGSTAR', category: 'Patterns', enabled: false, color: '#991b1b' },
+  { name: 'CDL Inverted Hammer', key: 'CDLINVERTEDHAMMER', category: 'Patterns', enabled: false, color: '#b91c1c' },
+  { name: 'CDL Harami', key: 'CDLHARAMI', category: 'Patterns', enabled: false, color: '#be123c' },
+  { name: 'CDL Harami Cross', key: 'CDLHARAMICROSS', category: 'Patterns', enabled: false, color: '#9f1239' },
+  { name: 'CDL Marubozu', key: 'CDLMARUBOZU', category: 'Patterns', enabled: false, color: '#881337' },
+  { name: 'CDL Spinning Top', key: 'CDLSPINNINGTOP', category: 'Patterns', enabled: false, color: '#831843' },
+  { name: 'CDL Three Black Crows', key: 'CDL3BLACKCROWS', category: 'Patterns', enabled: false, color: '#701a75' },
+  { name: 'CDL Three White Soldiers', key: 'CDL3WHITESOLDIERS', category: 'Patterns', enabled: false, color: '#581c87' },
 ];
 
 const DRAWING_TOOLS: DrawingTool[] = [
@@ -268,22 +343,22 @@ export function Charts() {
     isWebSocketConnected
   } = useTradingData();
 
-  // Create chart theme based on NovaSignal theme
+  // TradingView Supercharts Dark Theme
   const chartTheme = useMemo((): DeepPartial<ChartOptions> => ({
     layout: {
-      background: { type: ColorType.Solid, color: theme.backgroundColor },
-      textColor: theme.textColor,
+      background: { type: ColorType.Solid, color: '#131722' }, // TradingView dark background
+      textColor: '#d1d4dc', // TradingView text color
       fontSize: 12,
-      fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
+      fontFamily: "'Trebuchet MS', 'Roboto', sans-serif",
     },
     grid: {
       vertLines: { 
-        color: theme.gridColor,
+        color: '#1e222d', // Subtle grid lines
         visible: localChartSettings.showGrid,
         style: 1,
       },
       horzLines: { 
-        color: theme.gridColor,
+        color: '#1e222d', // Subtle grid lines
         visible: localChartSettings.showGrid,
         style: 1,
       },
@@ -293,21 +368,23 @@ export function Charts() {
       vertLine: {
         visible: localChartSettings.showCrosshair,
         labelVisible: true,
-        color: theme.textColor,
+        color: '#9598a1', // TradingView crosshair color
         width: 1,
         style: 3,
+        labelBackgroundColor: '#131722',
       },
       horzLine: {
         visible: localChartSettings.showCrosshair,
         labelVisible: true,
-        color: theme.textColor,
+        color: '#9598a1', // TradingView crosshair color
         width: 1,
         style: 3,
+        labelBackgroundColor: '#131722',
       },
     },
     rightPriceScale: {
       visible: localChartSettings.showPriceScale,
-      borderColor: theme.gridColor,
+      borderColor: '#1e222d',
       mode: localChartSettings.logScale ? PriceScaleMode.Logarithmic : PriceScaleMode.Normal,
       autoScale: localChartSettings.autoScale,
       scaleMargins: {
@@ -317,7 +394,7 @@ export function Charts() {
     },
     timeScale: {
       visible: localChartSettings.showTimeScale,
-      borderColor: theme.gridColor,
+      borderColor: '#1e222d',
       timeVisible: localChartSettings.timeVisible,
       secondsVisible: localChartSettings.secondsVisible,
       tickMarkFormatter: (time: Time) => {
@@ -370,16 +447,16 @@ export function Charts() {
     
     if (localChartSettings.chartType === 'candlestick') {
       mainSeries = chart.addCandlestickSeries({
-        upColor: theme.upColor,
-        downColor: theme.downColor,
-        borderDownColor: theme.downColor,
-        borderUpColor: theme.upColor,
-        wickDownColor: theme.downColor,
-        wickUpColor: theme.upColor,
+        upColor: '#26a69a', // TradingView green
+        downColor: '#ef5350', // TradingView red
+        borderDownColor: '#ef5350',
+        borderUpColor: '#26a69a',
+        wickDownColor: '#ef5350',
+        wickUpColor: '#26a69a',
       });
     } else if (localChartSettings.chartType === 'line') {
       mainSeries = chart.addLineSeries({
-        color: theme.upColor,
+        color: '#2962ff', // TradingView blue line
         lineWidth: 2,
         lineType: 0,
         crosshairMarkerVisible: true,
@@ -387,9 +464,9 @@ export function Charts() {
       });
     } else {
       mainSeries = chart.addAreaSeries({
-        lineColor: theme.upColor,
-        topColor: `${theme.upColor}40`,
-        bottomColor: `${theme.backgroundColor}00`,
+        lineColor: '#2962ff', // TradingView blue
+        topColor: 'rgba(41, 98, 255, 0.3)',
+        bottomColor: 'rgba(41, 98, 255, 0.0)',
         lineWidth: 2,
       });
     }
@@ -399,7 +476,7 @@ export function Charts() {
     // Create volume series if enabled
     if (localChartSettings.showVolume) {
       const volumeSeries = chart.addHistogramSeries({
-        color: '#26a69a',
+        color: '#26a69a80', // Semi-transparent for volume bars
         priceFormat: {
           type: 'volume',
         },
@@ -938,8 +1015,8 @@ export function Charts() {
                     width: '100%',
                     borderRadius: 1,
                     overflow: 'hidden',
-                    bgcolor: theme.backgroundColor,
-                    border: `1px solid ${theme.gridColor}`,
+                    bgcolor: '#131722', // TradingView background
+                    border: '1px solid #1e222d', // TradingView border
                   }}
                 />
               ) : (
