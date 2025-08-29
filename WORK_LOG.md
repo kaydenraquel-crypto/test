@@ -1,4 +1,4 @@
-# NovaSignal v0.2 Work Log
+# NovaSignal Work Log
 ## Professional Trading Platform Development Journal
 
 ---

@@ -11,6 +11,10 @@ pandas==2.2.2
 numpy==1.26.4
 ta==0.11.0
 
+# Logging and observability
+structlog==24.1.0
+psutil==5.9.8
+
 # Financial data providers
 yfinance==0.2.40
 alpaca-py==0.25.0
