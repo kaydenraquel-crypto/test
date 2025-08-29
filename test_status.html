@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaSignal Status Check</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0f0f23;
+            color: #fff;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 1rem;
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .status-card {
+            background: #1a1b3a;
+            border: 1px solid #2a2d4e;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        .status-card h3 {
+            margin-top: 0;
+            color: #fbbf24;
+        }
+        .check {
+            display: flex;
+            align-items: center;
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 4px;
+        }
+        .status-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+            display: inline-block;
+        }
+        .success { background: #10b981; }
+        .error { background: #ef4444; }
+        .warning { background: #fbbf24; }
+        .pending { background: #667eea; }
+        .log-output {
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 0.5rem;
+        }
+        button:hover {
+            background: #5a67d8;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 NovaSignal System Status</h1>
+    
+    <div class="status-grid">
+        <div class="status-card">
+            <h3>Backend API</h3>
+            <div class="check">
+                <span class="status-icon pending" id="backend-status"></span>
+                <span id="backend-text">Checking backend...</span>
+            </div>
+            <div class="check">
+                <span class="status-icon pending" id="cors-status"></span>
+                <span id="cors-text">Checking CORS...</span>
+            </div>
+        </div>
+
+        <div class="status-card">
+            <h3>API Endpoints</h3>
+            <div class="check">
+                <span class="status-icon pending" id="history-status"></span>
+                <span id="history-text">History API</span>
+            </div>
+            <div class="check">
+                <span class="status-icon pending" id="indicators-status"></span>
+                <span id="indicators-text">Indicators API</span>
+            </div>
+            <div class="check">
+                <span class="status-icon pending" id="news-status"></span>
+                <span id="news-text">News API</span>
+            </div>
+            <div class="check">
+                <span class="status-icon pending" id="predict-status"></span>
+                <span id="predict-text">Predictions API</span>
+            </div>
+        </div>
+
+        <div class="status-card">
+            <h3>WebSocket</h3>
+            <div class="check">
+                <span class="status-icon pending" id="ws-status"></span>
+                <span id="ws-text">WebSocket Connection</span>
+            </div>
+            <div id="ws-data" class="log-output" style="display:none;">
+                <pre id="ws-output"></pre>
+            </div>
+        </div>
+
+        <div class="status-card">
+            <h3>Chart Data</h3>
+            <div class="check">
+                <span class="status-icon pending" id="data-status"></span>
+                <span id="data-text">Loading chart data...</span>
+            </div>
+            <div id="data-info" style="margin-top: 1rem;"></div>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin: 2rem 0;">
+        <button onclick="runTests()">🔄 Run All Tests</button>
+        <button onclick="window.open('http://localhost:5175', '_blank')">🌐 Open App</button>
+        <button onclick="window.open('http://localhost:8000/docs', '_blank')">📚 API Docs</button>
+    </div>
+
+    <div class="status-card">
+        <h3>Test Log</h3>
+        <div class="log-output" id="test-log">
+            <div>Starting tests...</div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        const WS_BASE = 'ws://localhost:8000';
+        
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('test-log');
+            const time = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#ef4444' : type === 'success' ? '#10b981' : '#667eea';
+            logDiv.innerHTML += `<div style="color: ${color}">[${time}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function setStatus(id, status, text = null) {
+            const icon = document.getElementById(id + '-status');
+            const textEl = document.getElementById(id + '-text');
+            
+            icon.className = 'status-icon ' + status;
+            if (text) textEl.textContent = text;
+        }
+
+        async function testBackend() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                if (response.ok) {
+                    setStatus('backend', 'success', '✓ Backend is running');
+                    log('Backend health check passed', 'success');
+                    return true;
+                }
+            } catch (error) {
+                setStatus('backend', 'error', '✗ Backend is offline');
+                log('Backend connection failed: ' + error.message, 'error');
+                return false;
+            }
+        }
+
+        async function testCORS() {
+            try {
+                const response = await fetch(`${API_BASE}/api/history?symbol=AAPL&market=stocks&interval=5&days=1&provider=auto`, {
+                    method: 'OPTIONS',
+                    headers: {
+                        'Origin': 'http://localhost:5175',
+                        'Access-Control-Request-Method': 'GET'
+                    }
+                });
+                
+                if (response.ok) {
+                    setStatus('cors', 'success', '✓ CORS configured');
+                    log('CORS check passed', 'success');
+                    return true;
+                } else {
+                    setStatus('cors', 'error', '✗ CORS misconfigured');
+                    log('CORS check failed', 'error');
+                    return false;
+                }
+            } catch (error) {
+                setStatus('cors', 'error', '✗ CORS error');
+                log('CORS error: ' + error.message, 'error');
+                return false;
+            }
+        }
+
+        async function testHistory() {
+            try {
+                const response = await fetch(`${API_BASE}/api/history?symbol=AAPL&market=stocks&interval=5&days=1&provider=auto`);
+                const data = await response.json();
+                
+                if (response.ok && data.ohlc) {
+                    setStatus('history', 'success', `✓ History (${data.ohlc.length} bars)`);
+                    log(`History API: ${data.ohlc.length} bars loaded`, 'success');
+                    
+                    // Update data info
+                    document.getElementById('data-info').innerHTML = `
+                        <div>Symbol: ${data.symbol || 'AAPL'}</div>
+                        <div>Bars: ${data.ohlc.length}</div>
+                        <div>Provider: ${data.provider_used || 'auto'}</div>
+                    `;
+                    setStatus('data', 'success', `✓ ${data.ohlc.length} candles loaded`);
+                    
+                    return true;
+                }
+            } catch (error) {
+                setStatus('history', 'error', '✗ History API failed');
+                log('History API error: ' + error.message, 'error');
+                return false;
+            }
+        }
+
+        async function testIndicators() {
+            try {
+                const response = await fetch(`${API_BASE}/api/indicators/calculate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        symbol: 'AAPL',
+                        market: 'stocks',
+                        interval: 5,
+                        days: 30,
+                        limit: 200,
+                        provider: 'auto'
+                    })
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    const indicatorCount = Object.keys(data).length;
+                    setStatus('indicators', 'success', `✓ Indicators (${indicatorCount} types)`);
+                    log(`Indicators API: ${indicatorCount} indicators calculated`, 'success');
+                    return true;
+                }
+            } catch (error) {
+                setStatus('indicators', 'error', '✗ Indicators API failed');
+                log('Indicators API error: ' + error.message, 'error');
+                return false;
+            }
+        }
+
+        async function testNews() {
+            try {
+                const response = await fetch(`${API_BASE}/api/news?symbol=AAPL&market=stocks&limit=5`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const newsCount = Array.isArray(data) ? data.length : data.articles?.length || 0;
+                    setStatus('news', 'success', `✓ News (${newsCount} articles)`);
+                    log(`News API: ${newsCount} articles loaded`, 'success');
+                    return true;
+                }
+            } catch (error) {
+                setStatus('news', 'error', '✗ News API failed');
+                log('News API error: ' + error.message, 'error');
+                return false;
+            }
+        }
+
+        async function testPredict() {
+            try {
+                const response = await fetch(`${API_BASE}/api/predict`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        symbol: 'AAPL',
+                        market: 'stocks',
+                        interval: 5,
+                        horizons: ['5m', '1h'],
+                        lookback: 100,
+                        provider: 'auto'
+                    })
+                });
+                
+                if (response.ok) {
+                    setStatus('predict', 'success', '✓ Predictions API');
+                    log('Predictions API working', 'success');
+                    return true;
+                }
+            } catch (error) {
+                setStatus('predict', 'error', '✗ Predictions API failed');
+                log('Predictions API error: ' + error.message, 'error');
+                return false;
+            }
+        }
+
+        function testWebSocket() {
+            return new Promise((resolve) => {
+                try {
+                    const ws = new WebSocket(`${WS_BASE}/ws/stocks/ohlc?symbol=AAPL&interval=5&provider=auto`);
+                    let messageCount = 0;
+                    
+                    ws.onopen = () => {
+                        setStatus('ws', 'success', '✓ WebSocket connected');
+                        log('WebSocket connected successfully', 'success');
+                        document.getElementById('ws-data').style.display = 'block';
+                    };
+                    
+                    ws.onmessage = (event) => {
+                        messageCount++;
+                        const output = document.getElementById('ws-output');
+                        output.textContent = `Messages received: ${messageCount}\nLatest: ${event.data.substring(0, 100)}...`;
+                        
+                        if (messageCount >= 3) {
+                            ws.close();
+                            resolve(true);
+                        }
+                    };
+                    
+                    ws.onerror = (error) => {
+                        setStatus('ws', 'error', '✗ WebSocket error');
+                        log('WebSocket error', 'error');
+                        resolve(false);
+                    };
+                    
+                    ws.onclose = () => {
+                        if (messageCount > 0) {
+                            setStatus('ws', 'success', `✓ WebSocket (${messageCount} messages)`);
+                        }
+                    };
+                    
+                    setTimeout(() => {
+                        if (ws.readyState === WebSocket.CONNECTING) {
+                            setStatus('ws', 'warning', '⚠ WebSocket timeout');
+                            ws.close();
+                            resolve(false);
+                        }
+                    }, 5000);
+                    
+                } catch (error) {
+                    setStatus('ws', 'error', '✗ WebSocket failed');
+                    log('WebSocket error: ' + error.message, 'error');
+                    resolve(false);
+                }
+            });
+        }
+
+        async function runTests() {
+            log('Starting comprehensive system tests...', 'info');
+            
+            // Clear previous results
+            document.querySelectorAll('.status-icon').forEach(el => {
+                el.className = 'status-icon pending';
+            });
+            
+            // Run tests
+            await testBackend();
+            await testCORS();
+            
+            // Run API tests in parallel
+            await Promise.all([
+                testHistory(),
+                testIndicators(),
+                testNews(),
+                testPredict()
+            ]);
+            
+            await testWebSocket();
+            
+            log('All tests completed!', 'success');
+        }
+
+        // Auto-run tests on load
+        window.addEventListener('load', () => {
+            setTimeout(runTests, 500);
+        });
+    </script>
+</body>
+</html>

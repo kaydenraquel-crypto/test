@@ -1,4 +1,5 @@
 # NovaSignal v0.2 Development Roadmap
+
 ## MUI-First Professional Trading Platform
 
 **Project Overview:** NovaSignal v0.2 has successfully migrated to a professional Material-UI interface with comprehensive trading features, dark theme, and modern architecture.
@@ -257,6 +258,150 @@
 - **Code Reviews:** All changes require peer review
 - **Testing Strategy:** TDD approach with automated testing
 - **Documentation:** Maintain technical and user documentation
+
+---
+
+# NovaSignal v0.2 - Comprehensive Development Roadmap (Technical Addendum)
+
+**Project**: NovaSignal Trading Platform  
+**Version**: 0.2 → 1.0  
+**Last Updated**: 2025-01-26  
+**Prepared by**: Project Supervisor (AI Agent)  
+
+---
+
+## Phase Breakdown (Audit & Infrastructure)
+
+### **P0 – Stabilize (Critical) - Weeks 1-4**
+*Unblock core functionality, fix broken tests, resolve security vulnerabilities*
+
+### **P1 – Productize (High) - Weeks 5-10** 
+*MUI design system, installer improvements, API hardening, error handling architecture*
+
+### **P2 – Scale & Observe (Medium) - Weeks 11-16**
+*Performance optimization, observability, comprehensive testing, advanced features*
+
+### **P3 – Polish & DX (Low) - Weeks 17-20**
+*Documentation, tooling improvements, advanced charting, developer experience*
+
+---
+
+## Error Handling Architecture (Detailed Implementation)
+
+### Frontend ErrorBoundary Example
+```typescript
+// frontend/src/components/ErrorBoundary.tsx
+import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { Alert, Box, Button, Paper, Typography } from '@mui/material';
+
+interface ErrorBoundaryProps {
+  children: ReactNode;
+  fallback?: ReactNode;
+  onError?: (error: Error, errorInfo: ErrorInfo) => void;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+  errorInfo: ErrorInfo | null;
+  errorId: string;
+  retryCount: number;
+}
+
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = {
+      hasError: false,
+      error: null,
+      errorInfo: null,
+      errorId: '',
+      retryCount: 0,
+    };
+  }
+  // ... implementation omitted for brevity ...
+}
+
+export default ErrorBoundary;
+```
+
+### Backend Exception Handler Example
+```python
+# backend/app/handlers/errors.py
+from fastapi import HTTPException, Request
+from fastapi.responses import JSONResponse
+import uuid
+import structlog
+
+logger = structlog.get_logger()
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    correlation_id = str(uuid.uuid4())
+    logger.error(
+        "unhandled_exception",
+        correlation_id=correlation_id,
+        path=request.url.path,
+        method=request.method,
+        exception=str(exc),
+        exc_info=exc
+    )
+    return JSONResponse(
+        status_code=500,
+        content={
+            "error": "internal_server_error",
+            "message": "An unexpected error occurred",
+            "correlation_id": correlation_id,
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    )
+```
+
+---
+
+## Installer Scripts (Unix Example)
+
+### install.sh (Linux)
+```bash
+#!/bin/bash
+set -e
+
+detect_package_manager() {
+    if command -v apt-get &> /dev/null; then
+        echo "apt"
+    elif command -v yum &> /dev/null; then
+        echo "yum"
+    elif command -v dnf &> /dev/null; then
+        echo "dnf"
+    elif command -v pacman &> /dev/null; then
+        echo "pacman"
+    else
+        echo "unknown"
+    fi
+}
+
+install_python_nodejs() {
+    local pm=$(detect_package_manager)
+    case $pm in
+        "apt")
+            sudo apt-get update
+            sudo apt-get install -y python3 python3-pip python3-venv nodejs npm
+            ;;
+        "yum"|"dnf")
+            sudo $pm install -y python3 python3-pip nodejs npm
+            ;;
+        "pacman")
+            sudo pacman -S --noconfirm python python-pip nodejs npm
+            ;;
+        *)
+            echo "Unsupported package manager. Please install Python 3.8+ and Node.js 18+ manually."
+            exit 1
+            ;;
+    esac
+}
+
+install_python_nodejs
+```
 
 ---
 
