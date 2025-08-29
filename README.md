@@ -60,12 +60,89 @@
 
 ## 🛠️ Installation & Setup
 
-### Prerequisites
-- **Node.js 18+** 
-- **Python 3.8+**
-- **Git**
+NovaSignal supports **Windows**, **macOS**, and **Linux** with automated one-click installers for each platform.
 
-### Quick Start
+### 🎯 One-Click Installation (Recommended)
+
+#### Windows
+```powershell
+# Run PowerShell as Administrator
+.\install.ps1
+.\run_all.bat
+```
+
+#### macOS
+```bash
+chmod +x install-macos.sh && ./install-macos.sh
+./start_all_macos.sh
+```
+
+#### Linux
+```bash
+chmod +x install.sh && ./install.sh
+./start_all.sh
+```
+
+### 🔍 Platform Detection
+
+Not sure which installer to use? Run the platform detection script:
+```bash
+node detect-platform.js
+```
+
+This will automatically detect your platform and provide specific installation instructions.
+
+### 📋 System Requirements
+
+#### Windows
+- **Windows 10** or later
+- **PowerShell 5.0** or later
+- **Internet connection** for package downloads
+- **Administrator privileges** (for package installation)
+
+#### macOS  
+- **macOS 10.15 (Catalina)** or later
+- **Xcode Command Line Tools**
+- **Internet connection** for package downloads
+- **Homebrew** (installed automatically if needed)
+
+#### Linux
+- **Modern Linux distribution** (Ubuntu 18.04+, CentOS 7+, etc.)
+- **Package manager** (apt, yum, dnf, pacman, zypper, emerge, apk)
+- **sudo privileges**
+- **Internet connection** for package downloads
+
+### 🚀 What the Installers Do
+
+1. **Detect and install dependencies**
+   - Python 3.8+ with pip and venv
+   - Node.js 18+ with npm
+   - Platform-specific package managers
+
+2. **Set up the application**
+   - Create Python virtual environment
+   - Install Python dependencies
+   - Install Node.js dependencies
+   - Create environment configuration file
+
+3. **Create launcher scripts**
+   - Platform-appropriate startup scripts
+   - Individual service runners (backend/frontend)
+   - Cross-platform unified runner
+
+### 🔧 Manual Installation
+
+If you prefer manual setup or the automated installer doesn't work:
+
+<details>
+<summary>Click to expand manual installation steps</summary>
+
+#### Prerequisites
+- **Node.js 18+** ([Download](https://nodejs.org/))
+- **Python 3.8+** ([Download](https://python.org/))
+- **Git** ([Download](https://git-scm.com/))
+
+#### Steps
 
 1. **Clone the repository**
    ```bash
@@ -76,9 +153,16 @@
 2. **Backend Setup**
    ```bash
    cd backend
+   # Windows
    python -m venv .venv
-   .venv/Scripts/activate  # On Windows
-   # source .venv/bin/activate  # On macOS/Linux
+   .venv\Scripts\activate
+   
+   # macOS/Linux  
+   python3 -m venv .venv
+   source .venv/bin/activate
+   
+   # All platforms
+   pip install --upgrade pip
    pip install -r requirements.txt
    ```
 
@@ -90,26 +174,50 @@
 
 4. **Environment Configuration**
    ```bash
-   # Backend - create .env file
+   # Create environment file
    cp .env.example .env
-   # Add your API keys for data providers
+   # Edit .env and add your API keys
    ```
 
 5. **Start the Application**
    ```bash
    # Terminal 1 - Backend
    cd backend
-   .venv/Scripts/python.exe -m uvicorn main:app --reload --port 8000
+   
+   # Windows
+   .venv\Scripts\python.exe -m uvicorn main:app --reload --port 8000
+   
+   # macOS/Linux
+   source .venv/bin/activate
+   python -m uvicorn main:app --reload --port 8000
    
    # Terminal 2 - Frontend
    cd frontend
-   npm run dev -- --port 3003
+   npm run dev
    ```
 
-6. **Open Application**
-   ```
-   http://localhost:3003
-   ```
+</details>
+
+### 🌐 Access URLs
+
+After installation, NovaSignal will be available at:
+- **Frontend UI:** http://127.0.0.1:5173
+- **Backend API:** http://127.0.0.1:8000  
+- **API Documentation:** http://127.0.0.1:8000/docs
+
+### 🔍 Validation & Troubleshooting
+
+Run the cross-platform validation script to check your setup:
+```bash
+node validate-setup-cross-platform.js
+```
+
+This will verify:
+- ✅ Platform support and compatibility
+- ✅ System requirements (Python, Node.js versions)
+- ✅ Project structure and dependencies
+- ✅ Environment configuration
+- ✅ Platform-specific features
 
 ## 📚 Documentation
 

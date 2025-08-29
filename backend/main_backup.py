@@ -25,7 +25,7 @@ from connectors.stocks_alpaca import alpaca_stream_available, stream_alpaca_bars
 from connectors.crypto_router import fetch_history_crypto
 from signals.indicators import compute_indicators
 from signals.strategies import combined_signals
-from routers import alpha_vantage, symbols
+from routers import alpha_vantage
 
 # ---------- Torch / ML predictor guard ----------
 HAVE_TORCH_MODEL = False
@@ -90,21 +90,15 @@ class SafeJSONResponse(JSONResponse):
     def render(self, content) -> bytes:
         return json.dumps(content, cls=SafeJSONEncoder, ensure_ascii=False, allow_nan=False, indent=None, separators=(",", ":")).encode("utf-8")
 
-app = FastAPI(title="NovaSignal Backend", version="0.7.7-llm-guarded")
+app = FastAPI(title="NovaSignal Backend", version="0.7.7-llm-guarded", default_response_class=SafeJSONResponse)
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",  # Vite dev server
         "http://127.0.0.1:5173",  # Alternative localhost
-        "http://localhost:5174",  # Alternative frontend port
-        "http://127.0.0.1:5174",  # Alternative localhost  
-        "http://localhost:5175",  # Current frontend port
-        "http://127.0.0.1:5175",  # Alternative localhost
         "http://localhost:3000",  # Alternative React dev server
         "http://127.0.0.1:3000",  # Alternative localhost
-        "http://localhost:3001",  # Alternative frontend port
-        "http://127.0.0.1:3001",  # Alternative localhost
         # Removed "*" for security - no wildcard with credentials
     ],
     allow_credentials=True,
@@ -112,22 +106,8 @@ app.add_middleware(
     allow_headers=["Content-Type", "Authorization", "Accept", "Origin", "X-Requested-With"],
 )
 
-# Include routers
+# Include Alpha Vantage router
 app.include_router(alpha_vantage.router)
-app.include_router(symbols.router)
-
-# Include TA-Lib indicators router
-TALIB_ROUTER_AVAILABLE = False
-try:
-    from routers import indicators as talib_indicators_router
-    app.include_router(talib_indicators_router.router)
-    logger.info("✅ TA-Lib indicators router loaded successfully")
-    TALIB_ROUTER_AVAILABLE = True
-except Exception as e:
-    logger.error(f"❌ Failed to load TA-Lib indicators router: {e}")
-    import traceback
-    traceback.print_exc()
-    TALIB_ROUTER_AVAILABLE = False
 
 # ------------------ Request Schemas ------------------
 
@@ -159,33 +139,7 @@ class LLMRequest(BaseModel):
 
 @app.get("/health")
 async def health():
-    health_status = {"ok": True, "torch_model": HAVE_TORCH_MODEL}
-    
-    # Check TA-Lib availability
-    try:
-        if TALIB_ROUTER_AVAILABLE:
-            from services.talib_service import get_talib_service
-            talib_service = get_talib_service()
-            talib_info = talib_service.get_indicator_info()
-            health_status.update({
-                "talib_available": True,
-                "talib_version": talib_info.get("talib_version", "unknown"),
-                "talib_functions": talib_info.get("total_functions", 0),
-                "indicators_engine": "talib"
-            })
-        else:
-            health_status.update({
-                "talib_available": False,
-                "indicators_engine": "ta-legacy"
-            })
-    except Exception as e:
-        health_status.update({
-            "talib_available": False,
-            "talib_error": str(e),
-            "indicators_engine": "ta-legacy"
-        })
-    
-    return health_status
+    return {"ok": True, "torch_model": HAVE_TORCH_MODEL}
 
 # ------------------ WebSockets ------------------
 
@@ -483,9 +437,9 @@ async def api_history(symbol: str, market: str = "crypto", interval: int = 1, da
     
     return {"ohlc": data, "symbol": symbol, "market": market, "provider_used": "auto"}
 
-@app.post("/api/indicators/legacy")
-async def api_indicators_legacy(req: IndicatorRequest):
-    """Legacy indicators endpoint with real calculations (use /api/indicators/calculate for new TA-Lib version)"""
+@app.post("/api/indicators")
+async def api_indicators(req: IndicatorRequest):
+    """Enhanced indicators endpoint with real calculations"""
     
     try:
         # Get market data first
@@ -510,64 +464,21 @@ async def api_indicators_legacy(req: IndicatorRequest):
                 "data_points": len(data) if data else 0
             }
         
-        # Calculate indicators - Try TA-Lib first, fallback to legacy system
+        # Calculate indicators
         indicator_data = data[-req.limit:] if len(data) > req.limit else data
         logger.info(f"Indicators API: Using {len(indicator_data)} data points for calculations")
+        if indicator_data:
+            logger.info(f"Indicators API: Sample data - {indicator_data[0]}")
         
-        try:
-            # Try TA-Lib first if available
-            if TALIB_ROUTER_AVAILABLE:
-                from services.talib_service import get_talib_service
-                talib_service = get_talib_service()
-                
-                logger.info(f"Indicators API: Using TA-Lib for {req.symbol}")
-                talib_indicators = talib_service.calculate_all_indicators(indicator_data, include_patterns=False)
-                
-                if "error" not in talib_indicators:
-                    # Extract metadata and convert to legacy format
-                    metadata = talib_indicators.pop('_metadata', {})
-                    
-                    # Map TA-Lib indicators to legacy format for compatibility
-                    indicators = {
-                        # Basic indicators with legacy names
-                        "sma": talib_indicators.get("sma_20", [None] * len(indicator_data)),
-                        "ema": talib_indicators.get("ema_21", [None] * len(indicator_data)),
-                        "rsi": talib_indicators.get("rsi_14", [None] * len(indicator_data)),
-                        "macd": talib_indicators.get("macd", [None] * len(indicator_data)),
-                        "macd_signal": talib_indicators.get("macd_signal", [None] * len(indicator_data)),
-                        "macd_hist": talib_indicators.get("macd_histogram", [None] * len(indicator_data)),
-                        "bb_high": talib_indicators.get("bb_upper", [None] * len(indicator_data)),
-                        "bb_low": talib_indicators.get("bb_lower", [None] * len(indicator_data)),
-                        "bb_mid": talib_indicators.get("bb_middle", [None] * len(indicator_data)),
-                        "atr": talib_indicators.get("atr_14", [None] * len(indicator_data)),
-                        
-                        # Additional TA-Lib indicators
-                        **{k: v for k, v in talib_indicators.items() if not k.startswith('_')}
-                    }
-                    
-                    # Add TA-Lib metadata
-                    indicators["_talib_metadata"] = metadata
-                    indicators["_engine"] = "talib"
-                    
-                    logger.info(f"Indicators API: TA-Lib calculated {len(indicators)} indicators for {req.symbol}")
-                else:
-                    raise Exception(f"TA-Lib calculation failed: {talib_indicators['error']}")
-            else:
-                raise Exception("TA-Lib not available")
-                
-        except Exception as talib_error:
-            # Fallback to legacy ta library
-            logger.warning(f"TA-Lib failed for {req.symbol}, using legacy system: {talib_error}")
-            indicators = compute_indicators(indicator_data)
-            indicators["_engine"] = "ta-legacy"
-            logger.info(f"Indicators API: Legacy system calculated indicators with keys: {list(indicators.keys())[:5]}")
+        indicators = compute_indicators(indicator_data)
+        logger.info(f"Indicators API: Indicators calculated with keys: {list(indicators.keys())[:5]}")
         
-        # Check if we have actual values (for logging)
+        # Check if we have actual values
         if 'sma' in indicators and indicators['sma']:
             non_none_sma = [v for v in indicators['sma'] if v is not None]
             logger.info(f"Indicators API: SMA has {len(non_none_sma)} non-None values out of {len(indicators['sma'])}")
         
-        # Calculate signals using the indicators
+        # Calculate signals
         signals = combined_signals(data[-req.limit:] if len(data) > req.limit else data, indicators)
         
         return {
@@ -698,4 +609,4 @@ async def api_llm_market_scan():
 # Run the server if executed directly
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8004, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

@@ -115,6 +115,19 @@ export function useReconnectingWebSocket<T = any>(
   const connect = useCallback(() => {
     if (!url || intentionalCloseRef.current) return
 
+    // Validate WebSocket URL
+    try {
+      new URL(url);
+    } catch (error) {
+      console.error('❌ Invalid WebSocket URL:', url);
+      setState(prev => ({
+        ...prev,
+        connectionStatus: 'error',
+        error: new Error('Invalid WebSocket URL')
+      }));
+      return;
+    }
+
     // Don't connect if already connecting or connected
     if (wsRef.current?.readyState === WebSocket.CONNECTING || 
         wsRef.current?.readyState === WebSocket.OPEN) {
@@ -172,15 +185,32 @@ export function useReconnectingWebSocket<T = any>(
             return
           }
 
+          // Handle status messages
+          if (message.type === 'status') {
+            console.log('📊 WebSocket status:', message.message);
+            return;
+          }
+
+          // Handle error messages
+          if (message.type === 'error') {
+            console.error('❌ WebSocket error:', message.error);
+            setState(prev => ({ 
+              ...prev, 
+              error: new Error(message.error)
+            }));
+            return;
+          }
+
           // Handle data messages
           if (message.type === 'ohlc' && message.data) {
             setState(prev => ({ 
               ...prev, 
-              data: [...prev.data, message.data].slice(-1000) // Keep last 1000 items
+              data: message.data, // Use latest data instead of accumulating
+              error: null
             }))
           }
         } catch (error) {
-          console.warn('Failed to parse WebSocket message:', error)
+          console.warn('Failed to parse WebSocket message:', error, 'Raw data:', event.data)
         }
       }
 
@@ -296,9 +326,10 @@ export function useReconnectingWebSocket<T = any>(
     // If URL changed, disconnect and reconnect
     if (wsRef.current) {
       disconnect()
-              window.setTimeout(() => connect(), 100)
+              window.setTimeout(() => connect(), 500)
     } else {
-      connect()
+      // Add a small delay to ensure backend is ready
+      window.setTimeout(() => connect(), 500)
     }
 
     return () => {
